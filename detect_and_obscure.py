@@ -2,7 +2,7 @@ import os
 import cv2
 from ultralytics.models import YOLO
 
-# define input and output folders
+# *INPUT AND OUTPUT FOLDERS*
 img_folder = 'obscure_in/'
 processed_folder = 'obscure_out/'
 
@@ -12,7 +12,7 @@ if not os.path.exists(processed_folder):
 # Load the YOLOv8 nano model
 model = YOLO('yolov8n.pt')
 
-# From COCO dataset 
+# From COCO dataset
 # 0: person, 1: bicycle, 2: car, 3: motorcycle, 5: bus, 7: truck
 target_classes = [0, 1, 2, 3, 5, 7]
 
@@ -31,25 +31,26 @@ for img_name in img_paths:
         print(f"Could not read {img_name}")
         continue
 
-    # Run YOLO inference
-    # verbose=False keeps the terminal clean
+    # Run YOLO object detection
     results = model(img, verbose=False)
 
     # Iterate through detections
     for result in results:
         boxes = result.boxes
         for box in boxes:
-            # Get class ID (what object is it?)
+            # Get class ID
             cls_id = int(box.cls[0])
 
             if cls_id in target_classes:
                 # Get coordinates (x1, y1, x2, y2)
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-                # Draw a solid black rectangle
-                # (0, 0, 0) is black color
-                # -1 thickness means "fill the shape"
-                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 0), -1)
+                # Apply Gaussian blur to the detected object region
+                blurred_region = cv2.GaussianBlur(
+                    img[y1:y2, x1:x2], (99, 99), 30)
+
+                # Replace the original region with the blurred region
+                img[y1:y2, x1:x2] = blurred_region
 
     # Save the result
     output_path = os.path.join(processed_folder, img_name)
