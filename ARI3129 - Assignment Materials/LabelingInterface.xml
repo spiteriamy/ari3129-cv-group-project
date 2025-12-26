@@ -1,0 +1,61 @@
+<View>
+  <Header value="Maltese Traffic Signs: Detection and Attribute Labelling"/>
+
+  <!-- OBJECT -->
+  <View style="display:flex;align-items:start;gap:8px;flex-direction:column-reverse">
+    <Image name="image" value="$image" zoom="true" zoomControl="true" rotateControl="false"/>
+    <RectangleLabels name="sign_type" toName="image" showInline="true">
+      <Label value="Stop" category="1" background="#E53935" hotkey="1"/>
+      <Label value="No Entry (One Way)" category="2" background="#8E24AA" hotkey="2"/>
+      <Label value="Pedestrian Crossing" category="3" background="#1E88E5" hotkey="3"/>
+      <Label value="Roundabout Ahead" category="4" background="#43A047" hotkey="4"/>
+      <Label value="No Through Road (T-Sign)" category="5" background="#FDD835" hotkey="5"/>
+      <Label value="Blind-Spot Mirror (Convex)" category="6" background="#FB8C00" hotkey="6"/>
+    </RectangleLabels>
+  </View>
+
+  <!-- INSTRUCTIONS -->
+  <View style="margin:8px 0; font-size:13px; color:#555;">
+    Draw a bounding box around each traffic sign. After drawing, choose Sign Type, then set Shape, Viewing Angle, Mounting, and Condition (all required).
+  </View>
+
+  <!-- REQUIRED PER-REGION ATTRIBUTES -->
+  <Choices name="view_angle" toName="image" perRegion="true" choice="single" required="true" showInline="true">
+    <Header value="Viewing Angle"/>
+    <Choice value="Front"/>
+    <Choice value="Side"/>
+    <Choice value="Back"/>
+  </Choices>
+
+  <Choices name="mounting" toName="image" perRegion="true" choice="single" required="true" showInline="true">
+    <Header value="Mounting Type"/>
+    <Choice value="Pole-mounted"/>
+    <Choice value="Wall-mounted"/>
+  </Choices>
+
+  <Choices name="condition" toName="image" perRegion="true" choice="single" required="true" showInline="true">
+    <Header value="Sign Condition"/>
+    <Choice value="Good"/>
+    <Choice value="Weathered"/>
+    <Choice value="Heavily Damaged"/>
+  </Choices>
+
+  <Choices name="sign_shape" toName="image" perRegion="true" choice="single" required="true" showInline="true">
+    <Header value="Sign Shape Type"/>
+    <Choice value="Circular"/>
+    <Choice value="Square"/>
+    <Choice value="Triangular"/>
+    <Choice value="Octagonal"/>
+    <Choice value="Damaged"/>
+  </Choices>
+
+  <!-- TASK-LEVEL TAGS (optional) -->
+  <View style="margin-top:12px; border-top:1px solid #ddd; padding-top:8px;">
+    <Header value="Additional Tags"/>
+    <Choices name="image_tags" toName="image" choice="multiple" showInline="true">
+      <Choice value="Sourced Online"/>
+      <Choice value="No EXIF"/>
+    </Choices>
+    <TextArea name="custom_tags" toName="image" rows="2" placeholder="Custom tags (e.g., team member name, camera model, location) — optional"/>
+  </View>
+</View>

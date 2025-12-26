@@ -1,0 +1,33 @@
+name: ARI3129
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - ipykernel
+  - jupyterlab
+  - notebook
+  - numpy
+  - pandas
+  - pillow
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - opencv
+  - pyyaml
+  - requests
+  - tqdm
+  - psutil
+  - shapely
+  - pycocotools
+  - tensorboard
+  - pip
+  - pytorch::pytorch=2.4
+  - pytorch::torchvision=0.19
+  - pytorch::torchaudio=2.4
+  - pip:
+      - ultralytics==8.3.45
+      - albumentations==1.4.11
+      - label-studio-tools==0.0.5
