@@ -1,0 +1,13 @@
+{
+  "path": "C:\\Users\\spite\\Desktop\\ARI3129 Advanced Computer Vision for Artificial Intelligence\\Assignment\\ARI3129 - Assignment Materials\\MemberMerger Fixed\\YOLO_COCO_sign_shape",
+  "train": "images/train",
+  "val": "images/val",
+  "test": "images/test",
+  "names": [
+    "Circular",
+    "Damaged",
+    "Octagonal",
+    "Square",
+    "Triangular"
+  ]
+}

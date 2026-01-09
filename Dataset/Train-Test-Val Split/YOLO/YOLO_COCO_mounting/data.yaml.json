@@ -1,0 +1,10 @@
+{
+  "path": "C:\\Users\\spite\\Desktop\\ARI3129 Advanced Computer Vision for Artificial Intelligence\\Assignment\\ARI3129 - Assignment Materials\\MemberMerger Fixed\\YOLO_COCO_mounting",
+  "train": "images/train",
+  "val": "images/val",
+  "test": "images/test",
+  "names": [
+    "Pole-mounted",
+    "Wall-mounted"
+  ]
+}
