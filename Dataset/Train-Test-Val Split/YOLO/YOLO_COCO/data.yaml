@@ -1,0 +1,11 @@
+path: Dataset/Train-Test-Val Split/YOLO/YOLO_COCO/
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: Blind-Spot Mirror (Convex)
+  1: No Entry (One Way)
+  2: No Through Road (T-Sign)
+  3: Pedestrian Crossing
+  4: Roundabout Ahead
+  5: Stop

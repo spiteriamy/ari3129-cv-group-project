@@ -1,0 +1,8 @@
+path: ../../
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: Back
+  1: Front
+  2: Side

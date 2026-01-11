@@ -1,0 +1,10 @@
+path: ../../
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: Circular
+  1: Damaged
+  2: Octagonal
+  3: Square
+  4: Triangular
