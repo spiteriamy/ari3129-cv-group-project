@@ -1,6 +1,6 @@
 obscure_*/*
 *.pt
-Dataset/Train-Test-Val Split/YOLO/YOLO_COCO/images
+Dataset/Train-Test-Val Split/images
 
 # model training cache files
 *.cache
