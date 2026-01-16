@@ -1,7 +1,3 @@
-path: ../..
-train: images/train
-val: images/val
-test: images/test
 names:
   0: Blind-Spot Mirror (Convex)
   1: No Entry (One Way)
@@ -9,3 +5,7 @@ names:
   3: Pedestrian Crossing
   4: Roundabout Ahead
   5: Stop
+path: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO
+test: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO\images\test
+train: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO\images\train
+val: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO\images\val
