@@ -33,3 +33,8 @@ Dataset/
 - [**merged_images.zip**](Dataset/merged_images.zip): All images in dataset, combined from all members.
 
 - [**merged_input.json**](Dataset/merged_input.json): All image annotations.
+
+---
+
+[**Annotation Process**](/Annotation%20Process/): This directory contains all of the dataset files that were uploaded during the annotation stage, before merging and creating the final dataset. It also contains scripts used to help blur the images.
+
