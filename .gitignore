@@ -8,3 +8,10 @@ Dataset/Train-Test-Val Split/images
 
 # training results
 runs/
+
+# report build files
+documentation/Reports/*
+!documentation/Reports/Assignment_Report.tex
+!documentation/Reports/Assignment_Report.pdf
+!documentation/Reports/Generative AI Usage Journal.tex
+!documentation/Reports/Generative AI Usage Journal.pdf
