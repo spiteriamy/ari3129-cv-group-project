@@ -33,6 +33,9 @@
 \sloppy
 
 \begin{document}
+
+\pagenumbering{roman}
+
 \begin{titlepage}
     \centering
     \vspace*{2cm}
@@ -47,25 +50,59 @@
 \tableofcontents
 \newpage
 
+\pagenumbering{arabic}
+
 \justifying\noindent
 
 \section{Introduction}
-% Provide an overview of the project.
+% An overview of the project objectives and scope.
+The Aim of this project was to implement and evaluate various object detection algorithms on a custom dataset. The project was split up into the following sections:
+\begin{itemize}
+    \item Building a dataset:
+          \begin{enumerate}
+              \item Image collection,
+              \item Image cleaning,
+              \item Image annotation,
+              \item Data analysis, and
+              \item Data preprocessing.
+          \end{enumerate}
+
+    \item Object detection/ localization:
+          \begin{enumerate}
+              \item Implementation of two object detectors to detect sign type,
+              \item Implementation of one object detector to detect a specific sign attribute, and
+              \item Evaluation of the trained detectors, including metrics and visualizations.
+              \item Analysis of input image, supporting the maintenance and monitoring of traffic signs. % whatever u say vro
+          \end{enumerate}
+\end{itemize}
+The following steps were taken to ensure an equal and fair distribution of work among all group members:
+\begin{itemize}
+    \item For task 1, each group member contributed a similar number of annotated images to the dataset.
+    \item For task 2, each team member was assigned one YOLO-based detector and one COCO-based detector to implement and evaluate.
+\end{itemize}
+
 
 \section{Background on the techniques used}
-% Discuss the theoretical background of the methods employed.
+% The theoretical background of the methods employed.
 
 \section{Data Preparation}
-% Describe the dataset, annotation process, and data preprocessing steps.
+% Description of the dataset, annotation process, and data preprocessing steps.
+To prepare the dataset for training, the following steps were taken:
+\begin{enumerate}
+    \item The images were collected manually from diverse locations on the island, and at different times of the day. The goal was to capture a solid variety of sing conditions, angles, and lighting scenarios.
+    \item The collected images were then cleaned to remove any duplicates, after which, any recognizable faces or licence plates were obscured to ensure privacy. This was done both manually and using automated tools (all automated outputs were manually verified before moving onto the next step).
+    \item The images were then annotated 
+\end{enumerate}
 
 \section{Implementation of the object detectors}
-% Detail the implementation of the object detection models.
+% Detailed explanation of the implementation process, including code snippets where relevant.
 
 \section{Evaluation of the object detectors}
-% Present the evaluation results, metrics, and analysis.
+% Presentation of results, including metrics and visualizations.
 
 \newpage
+\pagenumbering{roman}
 \section{References and List of Resources Used}
-% List all references and resources properly cited.
+
 
 \end{document}
