@@ -1,0 +1,108 @@
+\documentclass{article}
+
+\title{ARI3129 Computer Vision Group Project}
+\author{Daniel Pace, Amy Spiteri, Ellyn Rose Debrincat, Joachim Grech}
+\date{\today}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinestyle{py}{
+    basicstyle=\ttfamily\small,                 % Use a monospaced font
+    keywordstyle=\color{purple},                % Keywords in purple
+    stringstyle=\color{blue},                   % Strings in blue
+    commentstyle=\color{green!60!black},        % Comments in green
+    numbers=left,                               % Line numbers on the left
+    numberstyle=\tiny\color{gray},              % Line number style
+    stepnumber=1,                               % Line number step
+    showstringspaces=false,                     % Do not show spaces in strings
+    breaklines=true,                            % Allow line breaking
+    tabsize=4,                                  % Set tab size
+    language=Python,                            % Set the language for syntax highlighting
+    numbersep=4pt,                              % Reduce the distance between line numbers and code (default is 10pt)
+    belowskip=1.5em
+}
+\setlength{\parindent}{0pt}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\sloppy
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\includegraphics[scale=0.5]{umcrest.jpg}\\[2em]}
+    {\Huge\bfseries Computer Vision Group Project\\[0.5cm]}
+    {\Large ARI3129\\[0.5cm]}
+    {\Large Assignment Report\\[0.5cm]}
+    {\large Daniel Pace, Amy Spiteri, Ellyn Rose Debrincat, Joachim Grech\\[0.5cm]}
+    {\large \today}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+
+\justifying\noindent
+
+\section{Introduction}
+% An overview of the project objectives and scope.
+The Aim of this project was to implement and evaluate various object detection algorithms on a custom dataset. The project was split up into the following sections:
+\begin{itemize}
+    \item Building a dataset:
+          \begin{enumerate}
+              \item Image collection,
+              \item Image cleaning,
+              \item Image annotation,
+              \item Data analysis, and
+              \item Data preprocessing.
+          \end{enumerate}
+
+    \item Object detection/ localization:
+          \begin{enumerate}
+              \item Implementation of two object detectors to detect sign type,
+              \item Implementation of one object detector to detect a specific sign attribute, and
+              \item Evaluation of the trained detectors, including metrics and visualizations.
+              \item Analysis of input image, supporting the maintenance and monitoring of traffic signs. % whatever u say vro
+          \end{enumerate}
+\end{itemize}
+The following steps were taken to ensure an equal and fair distribution of work among all group members:
+\begin{itemize}
+    \item For task 1, each group member contributed a similar number of annotated images to the dataset.
+    \item For task 2, each team member was assigned one YOLO-based detector and one COCO-based detector to implement and evaluate.
+\end{itemize}
+
+
+\section{Background on the techniques used}
+% The theoretical background of the methods employed.
+
+\section{Data Preparation}
+% Description of the dataset, annotation process, and data preprocessing steps.
+To prepare the dataset for training, the following steps were taken:
+\begin{enumerate}
+    \item The images were collected manually from diverse locations on the island, and at different times of the day. The goal was to capture a solid variety of sing conditions, angles, and lighting scenarios.
+    \item The collected images were then cleaned to remove any duplicates, after which, any recognizable faces or licence plates were obscured to ensure privacy. This was done both manually and using automated tools (all automated outputs were manually verified before moving onto the next step).
+    \item The images were then annotated %todo: continue
+\end{enumerate}
+
+\section{Implementation of the object detectors}
+% Detailed explanation of the implementation process, including code snippets where relevant.
+
+\section{Evaluation of the object detectors}
+% Presentation of results, including metrics and visualizations.
+
+\newpage
+\pagenumbering{roman}
+\section{References and List of Resources Used}
+
+
+\end{document}
