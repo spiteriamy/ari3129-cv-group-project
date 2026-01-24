@@ -8,6 +8,7 @@ Dataset/Train-Test-Val Split/images
 
 # training results
 runs/
+!Tensorboard/runs/
 
 # report build files
 documentation/Reports/*
