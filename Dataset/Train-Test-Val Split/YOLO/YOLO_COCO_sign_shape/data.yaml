@@ -1,0 +1,10 @@
+names:
+  0: Circular
+  1: Damaged
+  2: Octagonal
+  3: Square
+  4: Triangular
+path: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO_sign_shape
+test: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO_sign_shape\images\test
+train: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO_sign_shape\images\train
+val: c:\Users\Daniel\OneDrive\Desktop\Programs\Python\ari3129-cv-group-project\Dataset\Train-Test-Val Split\YOLO\YOLO_COCO_sign_shape\images\val

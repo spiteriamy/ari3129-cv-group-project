@@ -1,2 +1,17 @@
 obscure_*/*
-yolov8n.pt
+*.pt
+Dataset/Train-Test-Val Split/*/*/images
+Dataset/Train-Test-Val Split/images
+
+# model training cache files
+*.cache
+
+# training results
+runs/
+
+# report build files
+documentation/Reports/*
+!documentation/Reports/Assignment_Report.tex
+!documentation/Reports/Assignment_Report.pdf
+!documentation/Reports/Generative AI Usage Journal.tex
+!documentation/Reports/Generative AI Usage Journal.pdf
