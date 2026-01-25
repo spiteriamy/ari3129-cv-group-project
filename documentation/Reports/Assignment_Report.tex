@@ -129,9 +129,20 @@ To prepare the dataset for training, the following steps were taken:
 
 Each team member tried to collect a balanced amount of images per class as possible. However, due to some types of signs being less common than others, some imbalances appeared in the final dataset. 
 
-The Viewing Angle attribute was the most balanced out of all attributes, due to the fact that each sign was photographed from all three viewing angles. 39.75\% of all signs were captured from the front, 30.46\% from the back, and 29.79\% from the side. Perfect balance was not achieved due to signs that also appeared in the background, which were captured from different angles. 
+The class distribution for the Sign Type is moderately imbalanced, with No Entry (One Way) signs being the most frequent class (26.19\% of all signs). Pedestrian Crossing (19.17\%), Stop (18.22\%), and Blind-Spot Mirror (16.6\%) have similar representation. However, Roundabout Ahead (11.57\%) and No Through Road (8.25\%) signs appear less frequently. The distribution can be seen in the bar chart below.
 
-A very large imbalance could be seen in the Mounting Type attribute, with 87\% of all signs being pole-mounted, while only 13\% were wall-mounted. This is due to the fact that the majority of signs found across the island were pole-mounted, and wall-mounted signs were much rarer. Similarly, the class distribution for the Sign Condition attribute was also greatly imbalanced. Out of all signs, only 3.8\% were labelled as heavily damaged, while 67.08\% of signs were in good condition, and 29.13\% were weathered.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{class-dist.png}
+    \caption{Class Distribution of Sign Types}
+    \label{fig:dist}
+\end{figure}
+
+The Sign Shape Type attribute shows a noticeable class imbalance. Circular signs made up nearly half of the dataset (48.58\%), followed by square (20.49\%) and octagonal (17.55\%) signs, which are moderately represented. Triangular signs are significantly less frequent (10.63\%), while the damaged class is severely underrepresented (2.75\%). This imbalance reflects the real-world frequency of the traffic signs that were encountered during image collection, where circular signs (such as No Entry signs, which were also the most common sign type) were more commonly observed than other sign shapes.
+
+A very large imbalance could also be seen in the Mounting Type attribute, with 87\% of all signs being pole-mounted, while only 13\% were wall-mounted. This is due to the fact that the majority of signs found across the island were pole-mounted, and wall-mounted signs were much rarer. Similarly, the class distribution for the Sign Condition attribute was also greatly imbalanced. Out of all signs, only 3.8\% were labelled as heavily damaged, while 67.08\% of signs were in good condition, and 29.13\% were weathered.
+
+The Viewing Angle attribute was the most balanced out of all attributes, due to the fact that each sign was photographed from all three viewing angles. 39.75\% of all signs were captured from the front, 30.46\% from the back, and 29.79\% from the side. Perfect balance was not achieved due to signs that also appeared in the background, which were captured from different angles. 
 
 \section{Implementation of the object detectors}
 % Detailed explanation of the implementation process, including code snippets where relevant.
