@@ -109,10 +109,17 @@ To prepare the dataset for training, the following steps were taken:
     \item The images were collected manually from diverse locations on the island, and at different times of the day. The goal was to capture a solid variety of sign conditions, angles, and lighting scenarios.
     \item The collected images were then cleaned to remove any duplicates, after which, any recognizable faces or licence plates were obscured to ensure privacy. This was done both manually and using automated tools that can be found in the `Annotation Process' folder of the GitHub repository~\cite{github_repo} (all automated outputs were manually verified before moving onto the next step).
     \item The images were then annotated manually using LabelStudio as instructed.
-    \item {\color{red} todo: about merging datasets} Once all images were annotated by each member, the provided \verb|MemberMerger.py| was used to merge every team member's individual annotation JSON files and image ZIP files into one single merged dataset. The output from this step (\verb|merged_input.json| and \verb|merged_images.zip|) was then uploaded to the GitHub repository and can be found in the subdirectory \href{https://github.com/spiteriamy/ari3129-cv-group-project/tree/main/Dataset}{Dataset/}.
-    \item {\color{red} todo: splitting into train/test/val}
-    \item The combined dataset was then zipped and uploaded to the shared repository folder for easy access by all group members.
+    \item Once all images were annotated by each member, the provided \verb|MemberMerger.py| was used to merge every team member's individual annotation JSON files and image ZIP files into one single merged dataset. The output from this step (\verb|merged_input.json| and \verb|merged_images.zip|) was then uploaded to the GitHub repository and can be found in the subdirectory \href{https://github.com/spiteriamy/ari3129-cv-group-project/tree/main/Dataset}{\texttt{Dataset/}}.
+    \item The merged Label Studio JSON annotations were then converted into a COCO-formatted dataset by using the provided \verb|LS2COCO.ipynb|. This step produced five COCO-format annotation files, which were uploaded to the GitHub repository and can be found in the \href{https://github.com/spiteriamy/ari3129-cv-group-project/tree/main/Dataset/COCO-Format%20Annotations}{\texttt{Dataset/COCO-Format Annotations/}} subdirectory.
+    \item The dataset was then split into Train/Validation/Test subsets by using \verb|LS2COCO.ipynb|. A 70\%/15\%/15\% split was chosen to maximize the training data while still retaining sufficient validation and test sets, given the small dataset size. This resulted in a dataset of 485 train images, 111 validation images, and 119 test images.
+    \item The dataset splitting process was repeated for all attributes and for both YOLO and COCO-based formats.
+    \item The split dataset was then zipped and uploaded to the shared repository folder (\href{https://github.com/spiteriamy/ari3129-cv-group-project/tree/main/Dataset/Train-Test-Val%20Split}{\texttt{Dataset/Train-Test-Val Split/}}) for easy access by all group members.
 \end{enumerate}
+
+\subsection{}
+
+% Students should analyse and report on the balance or imbalance across all labelling categories (sign types as well as the four sign attributes) in the documentation. No strict balance is required, but the distribution must be documented and discussed.
+
 
 \section{Implementation of the object detectors}
 % Detailed explanation of the implementation process, including code snippets where relevant.
