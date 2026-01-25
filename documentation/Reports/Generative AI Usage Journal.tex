@@ -33,6 +33,9 @@
 \sloppy
 
 \begin{document}
+
+\pagenumbering{roman}
+
 \begin{titlepage}
     \centering
     \vspace*{2cm}
@@ -46,28 +49,51 @@
 
 \tableofcontents
 \newpage
-
+\pagenumbering{arabic}
 \justifying\noindent
 
 \section{Introduction}
 % Briefly describe the generative AI models you chose to use and the rationale behind that choice. (Maximum of 1 page)
+Generative AI tools were used in this assignment. The models used include:
+\begin{itemize}
+    \item Gemini 3 Pro: Chosen for its advanced thinking capabilities and large context window, making it suitable for complex problem-solving tasks. Also selected thanks to the free subscription provided by the University. 
+    \item Claude Sonnet 4.5: Selected for its high performance in coding tasks and problem-solving. The more formal tone it tends to use was also found to be beneficial for academic purposes. %todo: add any others
+\end{itemize}
 
 \section{Ethical Considerations}
-% Discuss the ethical aspects of using generative AI in your project. This should include issues such as data bias and privacy concerns. (Maximum of 1 page)
+
+The integration of generative AI tools into academic research raises several ethical considerations that warrant careful examination and mitigation strategies.
+
+\subsubsection*{Data Bias and Model Limitations}
+
+Generative AI models reflect biases inherent in their training data, which can manifest in code suggestions favouring certain programming paradigms or in technical explanations using biased terminology. To mitigate these concerns, we adopted a critical evaluation approach where all AI-generated content was reviewed and verified against authoritative sources such as official documentation and peer-reviewed papers. AI outputs were treated as starting points for investigation rather than definitive answers.
+
+\subsubsection*{Privacy and Data Security}
+
+Privacy considerations were paramount in our AI usage. We ensured that no sensitive information from our dataset was shared with AI platforms. All interactions were limited to general technical queries and code debugging that did not expose proprietary project details. We remained mindful of data retention policies, recognizing that prompts may be stored and used for model training.
 
 \section{Methodology}
 % Outline the methods and steps to integrate the generative AI model into your work. Which tools did you use, and in which sequence? Did you create your own pipeline, or did you use a single tool? There is no wrong answer, and this journal aims for transparency and accountability.
+The use of generative AI in our project can be classified into the following two main categories:
+\subsubsection*{Automatic, in-line code suggestions}
+In Visual Studio Code, the copilot extension was used to provide real-time code suggestions and completions. This tool was primarily employed during coding sessions to enhance productivity and reduce syntax errors. The AI model provided context-aware suggestions based on the current codebase, which were then reviewed and integrated by the team members. The free student subscription provided by GitHub was utilized for this purpose, giving us access to premium models and features.
+
+\subsubsection*{Prompt-Response interactions for specific tasks}
+For other tasks, such as debugging certain issues, or generating documentation outlines, we used web-based interfaces for Gemini 3 Pro and Claude Sonnet 4.5. The process involved formulating specific prompts related to the task at hand, submitting them to the AI model, and then evaluating the generated responses. The outputs were critically assessed for accuracy and relevance before being incorporated into our project workflow.
 
 \section{Prompts and Responses}
 % List down the specific prompts that were used with the generative AI model and that you found noteworthy. For each prompt, also include the generated response and explain how it contributed to improving your project. It is advisable to use screenshots for this part.
+{\color{red} somoene else do this please icba} %todo: this
 
 \section{Improvements, Errors and Contributions}
 % Discuss the areas where generative AI contributed to enhancing your work or instances where the output contained errors. This can include but is not limited to, data analysis, formulation of ethical considerations, literature review enhancement, or idea generation. Highlight specific cases where this happened.
 
 \section{Individual Reflection}
 % Reflect on your personal experience using generative AI in your project. Discuss what you learned, what surprised you, and how your perspective on using AI in academic projects has changed, if at all. Did Gen AI help you be more efficient? Do you feel you wasted more time when you used it? For which part was it most helpful? Literature review, debugging?
+Generative AI tools significantly enhanced our efficiency in most aspects of this project. The ability to quickly suggest relevant code snippets, debug issues, and generate documentation outlines allowed us to focus more on higher-level problem-solving and less on routine tasks. However, it was crucial to maintain a critical eye on the AI-generated content, as not all suggestions were accurate or contextually appropriate. This experience has reinforced the importance of human oversight in AI-assisted workflows. Overall, the integration of generative AI has positively influenced our approach to academic projects, highlighting both its potential and limitations.
 
-\newpage
+Generative AI has become a widely adopted tool in various fields, including academic research and project development. Thus, as students, we believe that it is necessary to make use of these tools in order to better understand their capabilities and limitations.
+\newpage\pagenumbering{roman}
 \section{References and List of Resources Used}
 % List references or resources consulted about generative AI.
 
