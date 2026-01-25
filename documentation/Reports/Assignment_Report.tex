@@ -50,6 +50,10 @@
 \end{titlepage}
 
 \tableofcontents
+\vspace{1cm}
+
+GitHub repository link: \url{https://github.com/spiteriamy/ari3129-cv-group-project}
+
 \newpage
 
 \pagenumbering{arabic}
@@ -94,6 +98,9 @@ The core innovation is the Region Proposal Network (RPN), a fully convolutional 
 
 \subsection{RF-DETR}
 
+\subsection{RetinaNet}
+
+\subsection{EfficientDet}
 
 
 \subsection{YOLO (You Only Look Once)}
@@ -116,10 +123,15 @@ To prepare the dataset for training, the following steps were taken:
     \item The split dataset was then zipped and uploaded to the shared repository folder (\href{https://github.com/spiteriamy/ari3129-cv-group-project/tree/main/Dataset/Train-Test-Val%20Split}{\texttt{Dataset/Train-Test-Val Split/}}) for easy access by all group members.
 \end{enumerate}
 
-\subsection{}
+\subsection{Dataset Class Distribution}
 
 % Students should analyse and report on the balance or imbalance across all labelling categories (sign types as well as the four sign attributes) in the documentation. No strict balance is required, but the distribution must be documented and discussed.
 
+Each team member tried to collect a balanced amount of images per class as possible. However, due to some types of signs being less common than others, some imbalances appeared in the final dataset. 
+
+The Viewing Angle attribute was the most balanced out of all attributes, due to the fact that each sign was photographed from all three viewing angles. 39.75\% of all signs were captured from the front, 30.46\% from the back, and 29.79\% from the side. Perfect balance was not achieved due to signs that also appeared in the background, which were captured from different angles. 
+
+A very large imbalance could be seen in the Mounting Type attribute, with 87\% of all signs being pole-mounted, while only 13\% were wall-mounted. This is due to the fact that the majority of signs found across the island were pole-mounted, and wall-mounted signs were much rarer. Similarly, the class distribution for the Sign Condition attribute was also greatly imbalanced. Out of all signs, only 3.8\% were labelled as heavily damaged, while 67.08\% of signs were in good condition, and 29.13\% were weathered.
 
 \section{Implementation of the object detectors}
 % Detailed explanation of the implementation process, including code snippets where relevant.
