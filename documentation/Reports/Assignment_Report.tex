@@ -98,25 +98,105 @@ To prepare the dataset for training, the following steps were taken:
 
 \section{Implementation of the object detectors}
 % Detailed explanation of the implementation process, including code snippets where relevant.
-\subsection{YOLO-based Detectors}
-% Explanation of the YOLO-based detectors implemented.
-
-\subsubsection{YOLOv8}
-
-\subsubsection{YOLOv11}
-
-\subsubsection{YOLOv12}
-
 \subsection{COCO-based Detector}
 % Explanation of the COCO-based detector implemented.
-
+The implementation of the different COCO-based detectors varied slightly between models due to their unique architectures and requirements, and having been implemented by different group members. In general, the aim was to match the outputs of the YOLO-based detectors in terms of training performance metrics. The main metric we aimed to optimize was the mAP at IoU=0.5 and at 0.5:0.95. 
+The following COCO-based detectors were implemented:
 \subsubsection{EfficientDet}
 
 \subsubsection{Faster R-CNN}
 
+The Faster R-CNN implementation was based on the pre-trained \texttt{fasterrcnn\_resnet50\_fpn\_v2} model from torchvision, using the FasterRCNN\_ResNet50\_FPN\_V2\_Weights.DEFAULT weights as a starting point. The model was fine-tuned on the custom traffic sign dataset with 6 sign classes plus a background class.
+
+\subsubsection*{Model Architecture}
+The base model utilizes a ResNet-50 backbone with Feature Pyramid Network (FPN) for multi-scale feature extraction. The region of interest (RoI) heads were modified to accommodate the custom number of classes by replacing the box predictor with a FastRCNNPredictor configured for 7 output classes.
+
+\subsubsection*{Dataset Configuration}
+The training and validation datasets were loaded using PyTorch's CocoDetection class with images transformed to tensors. A custom anchor generator was configured with five anchor sizes (16, 32, 64, 128, 256 pixels) and three aspect ratios (0.5, 1.0, 2.0) to better detect signs of varying sizes. The training used a batch size of 6 with pin memory enabled for faster GPU data transfer.
+
+\subsubsection*{Training Configuration}
+The model was trained for up to 100 epochs with the following hyperparameters:
+\begin{itemize}
+    \item Learning rate: 0.005
+    \item Momentum: 0.9
+    \item Weight decay: 0.0005
+    \item Optimizer: SGD
+    \item Learning rate scheduler: StepLR (step size=25, gamma=0.1)
+    \item Early stopping patience: 10 epochs
+\end{itemize}
+
+\subsubsection*{Loss Components}
+The total training loss was composed of four components: box regression loss, RPN box regression loss, classifier loss, and objectness loss. For logging purposes and comparison with YOLO results, these were grouped into box loss (loss\_box\_reg + loss\_rpn\_box\_reg) and classification loss (loss\_classifier + loss\_objectness).
+
+\subsubsection*{Evaluation Metrics}
+Validation was performed using COCO evaluation metrics, specifically tracking mAP@IoU=0.50 and mAP@IoU=0.50:0.95. The model's predictions were converted to COCO result format and evaluated using the pycocotools library. Early stopping was implemented based on mAP@IoU=0.50:0.95 to prevent overfitting.
+
+\subsubsection*{Logging and Monitoring}
+Training progress was monitored using TensorBoard for real-time visualization of loss curves and metrics. Additionally, a CSV file in YOLO-compatible format was generated containing epoch-wise metrics including training/validation losses, mAP scores, recall, and learning rates. The model was saved periodically every 10 epochs, with the best performing model (based on validation mAP) saved separately.
+
+The implementation was executed on hardware consisting of an AMD Ryzen 9 5950X CPU (16 cores/32 threads), 64 GB RAM, and an NVIDIA GeForce RTX 5070 Ti GPU with 16 GB VRAM, using CUDA 13.1 for acceleration.
+
 \subsubsection{RetinaNet}
 
 \subsubsection{RF-DETR}
+
+\subsection{YOLO-based Detectors}
+
+The implementation of different YOLO versions (YOLOv8, YOLOv11, and YOLOv12) followed a consistent methodology across all group members, with variations primarily in model size selection and hardware-specific optimizations. This section describes the common approach and highlights significant deviations.
+
+\subsubsection*{Common Implementation Framework}
+
+All YOLO implementations utilized the Ultralytics library and followed a standardized workflow consisting of dataset preparation, model training, and evaluation phases.
+
+\subsubsection*{Dataset Preparation}
+
+The dataset preparation phase was consistent across all implementations. Images were extracted from a compressed archive (\texttt{images.zip}) into the YOLO dataset directory structure. The \texttt{data.yaml} configuration file was programmatically updated to reflect absolute paths for the training, validation, and test splits on each user's system. This ensured portability across different development environments while maintaining consistent dataset access patterns.
+
+\subsubsection*{Model Selection and Training Configuration}
+
+Different YOLO versions and model sizes were employed:
+\begin{itemize}
+    \item YOLOv8: Nano variant (\texttt{yolov8n.pt}) for baseline experiments
+    \item YOLOv11: Small variant (\texttt{yolo11s.pt}) for balanced performance
+    \item YOLOv12: Multiple variants tested (Large, Medium, Small) to evaluate size-performance tradeoffs
+\end{itemize}
+
+The standard training configuration shared across implementations included:
+\begin{itemize}
+    \item Epochs: 100 with early stopping patience of 20
+    \item Image size: 640×640 pixels (default)
+    \item Device: Automatic GPU selection when available, CPU fallback otherwise
+    \item Checkpoint saving: Every 10 epochs
+    \item Task: Object detection (\texttt{task='detect'})
+    \item Project output: Organized under \texttt{runs/} directory
+\end{itemize}
+
+\subsubsection*{Significant Deviations}
+
+\paragraph{Hardware-Constrained Optimization}
+One implementation utilized reduced batch size (8) and image resolution (512×512) due to hardware memory limitations, demonstrating adaptive configuration for resource-constrained environments.
+
+\paragraph{Advanced Optimizer Configuration}
+An alternative implementation experimented with the Adam optimizer instead of the default SGD, along with disk caching (\texttt{cache='disk'}) and increased worker threads (\texttt{workers=8}) to optimize I/O performance.
+
+\paragraph{Automated Batch Sizing}
+The YOLOv12 experiments utilized automatic batch sizing (\texttt{batch=-1}) targeting 60\% GPU utilization, allowing the framework to dynamically determine optimal batch sizes based on available VRAM.
+
+\paragraph{Data Augmentation Experiments}
+Extended experiments with YOLOv12 included systematic comparison of default training versus augmented training with modified hyperparameters:
+\begin{itemize}
+    \item Horizontal/vertical flipping disabled (\texttt{fliplr=0.0, flipud=0.0}) to preserve sign orientation
+    \item Mosaic augmentation maintained at full strength (\texttt{mosaic=1.0})
+    \item Mixup augmentation introduced (\texttt{mixup=0.1})
+    \item Rotation augmentation enabled (\texttt{degrees=10.0})
+    \item Scale variation applied (\texttt{scale=0.5})
+\end{itemize}
+
+These augmentation strategies were designed specifically for traffic sign detection, where orientation preservation is critical but lighting and scale variations are beneficial.
+
+\subsubsection*{Monitoring and Logging}
+
+All implementations enabled TensorBoard logging for real-time training visualization. Training metrics including loss curves, mAP scores, precision, and recall were logged automatically to CSV files in YOLO's standard format, facilitating cross-model comparison and performance analysis.
 
 \section{Evaluation of the object detectors}
 % Presentation of results, including metrics and visualizations.
