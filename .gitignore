@@ -16,3 +16,5 @@ documentation/Reports/*
 !documentation/Reports/Assignment_Report.pdf
 !documentation/Reports/Generative AI Usage Journal.tex
 !documentation/Reports/Generative AI Usage Journal.pdf
+!documentation/Reports/*.png
+!documentation/Reports/*.jpg
