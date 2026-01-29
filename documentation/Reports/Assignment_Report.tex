@@ -130,7 +130,7 @@ To prepare the dataset for training, the following steps were taken:
 
 % Students should analyse and report on the balance or imbalance across all labelling categories (sign types as well as the four sign attributes) in the documentation. No strict balance is required, but the distribution must be documented and discussed.
 
-Each team member tried to collect a balanced amount of images per class as possible. However, due to some types of signs being less common than others, some imbalances appeared in the final dataset. 
+Each team member tried to collect a balanced amount of images per class as possible. However, due to some types of signs being less common than others, some imbalances appeared in the final dataset.
 
 The class distribution for the Sign Type (as illustrated in Figure~\ref{fig:dist}) is moderately imbalanced, with No Entry (One Way) signs being the most frequent class (26.19\% of all signs). Pedestrian Crossing (19.17\%), Stop (18.22\%), and Blind-Spot Mirror (16.6\%) have similar representation. However, Roundabout Ahead (11.57\%) and No Through Road (8.25\%) signs appear less frequently. The distribution can be seen in the bar chart below.
 
@@ -144,7 +144,7 @@ The Sign Shape Type attribute shows a noticeable class imbalance. Circular signs
 
 A very large imbalance could also be seen in the Mounting Type attribute, with 87\% of all signs being pole-mounted, while only 13\% were wall-mounted. This is due to the fact that the majority of signs found across the island were pole-mounted, and wall-mounted signs were much rarer. Similarly, the class distribution for the Sign Condition attribute was also greatly imbalanced. Out of all signs, only 3.8\% were labelled as heavily damaged, while 67.08\% of signs were in good condition, and 29.13\% were weathered.
 
-The Viewing Angle attribute was the most balanced out of all attributes, due to the fact that each sign was photographed from all three viewing angles. 39.75\% of all signs were captured from the front, 30.46\% from the back, and 29.79\% from the side. Perfect balance was not achieved due to signs that also appeared in the background, which were captured from different angles. 
+The Viewing Angle attribute was the most balanced out of all attributes, due to the fact that each sign was photographed from all three viewing angles. 39.75\% of all signs were captured from the front, 30.46\% from the back, and 29.79\% from the side. Perfect balance was not achieved due to signs that also appeared in the background, which were captured from different angles.
 
 \section{Implementation of the object detectors}
 % Detailed explanation of the implementation process, including code snippets where relevant.
@@ -278,6 +278,26 @@ The per-class accuracy breakdown highlights significant performance variance:
 These results indicate that while the model successfully learned features for distinct signs like 'No Entry', it struggled significantly with others, likely due to class imbalance or insufficient training data for those specific categories.
 
 \subsubsection{Faster R-CNN}
+The Faster R-CNN model, utilizing a ResNet-50 FPN V2 backbone, was trained for 58 epochs using the SGD optimizer with an initial learning rate of 0.005. The model was evaluated using standard COCO metrics on the full validation set.
+
+The model achieved the following peak performance metrics:
+\begin{itemize}
+    \item \textbf{mAP@.50}: 71.45\%
+    \item \textbf{mAP@.50:.95}: 59.46\%
+    \item \textbf{Recall}: 68.83\%
+\end{itemize}
+
+Analysis of the results indicates strong localization capabilities, though a performance gap persists between large and small objects. As shown in Figure~\ref{fig:rcnn_map} (right), the bounding box accuracy (mAP@.50:.95) continued to improve until approximately epoch 46, even after the classification metrics began to plateau. 
+
+A notable observation in the training dynamics is the divergence in classification loss illustrated in Figure~\ref{fig:rcnn_map} (left). While the training classification loss continued to decrease, the validation classification loss exhibited a gradual upward trend after epoch 4. This phenomenon suggests a degree of overfitting, where the model becomes over-confident in the specific categorical features of the training set, leading to a penalty in cross-entropy loss on unseen validation data. However, since the mAP scores remained stable or improved during this period, the model's actual predictive accuracy remained robust, indicating that the overfitting was primarily restricted to loss confidence rather than categorical misclassification. The final combined validation loss settled at 0.2852.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fasterrcnnperf.png}
+    \caption{Faster R-CNN Training Performance Metrics.}
+    \label{fig:rcnn_map}
+\end{figure}
 
 \subsubsection{RetinaNet}
 \subsubsection{RF-DETR}
