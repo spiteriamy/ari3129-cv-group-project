@@ -282,12 +282,12 @@ The Faster R-CNN model, utilizing a ResNet-50 FPN V2 backbone, was trained for 5
 
 The model achieved the following peak performance metrics:
 \begin{itemize}
-    \item \textbf{mAP@.50}: 71.45\%
-    \item \textbf{mAP@.50:.95}: 59.46\%
-    \item \textbf{Recall}: 68.83\%
+    \item mAP@.50: 71.45\%
+    \item mAP@.50:.95: 59.46\%
+    \item Recall: 68.83\%
 \end{itemize}
 
-Analysis of the results indicates strong localization capabilities, though a performance gap persists between large and small objects. As shown in Figure~\ref{fig:rcnn_map} (right), the bounding box accuracy (mAP@.50:.95) continued to improve until approximately epoch 46, even after the classification metrics began to plateau. 
+Analysis of the results indicates strong localization capabilities, though a performance gap persists between large and small objects. As shown in Figure~\ref{fig:rcnn_map} (right), the bounding box accuracy (mAP@.50:.95) continued to improve until approximately epoch 46, even after the classification metrics began to plateau.
 
 A notable observation in the training dynamics is the divergence in classification loss illustrated in Figure~\ref{fig:rcnn_map} (left). While the training classification loss continued to decrease, the validation classification loss exhibited a gradual upward trend after epoch 4. This phenomenon suggests a degree of overfitting, where the model becomes over-confident in the specific categorical features of the training set, leading to a penalty in cross-entropy loss on unseen validation data. However, since the mAP scores remained stable or improved during this period, the model's actual predictive accuracy remained robust, indicating that the overfitting was primarily restricted to loss confidence rather than categorical misclassification. The final combined validation loss settled at 0.2852.
 
@@ -295,8 +295,7 @@ A notable observation in the training dynamics is the divergence in classificati
 \begin{figure}[h]
     \centering
     \includegraphics[width=1.0\textwidth]{fasterrcnnperf.png}
-    \caption{Faster R-CNN Training Performance Metrics.}
-    \label{fig:rcnn_map}
+    \caption{Faster R-CNN Training Performance Metrics.}\label{fig:rcnn_map}
 \end{figure}
 
 \subsubsection{RetinaNet}
@@ -306,6 +305,30 @@ A notable observation in the training dynamics is the divergence in classificati
 \subsubsection{YOLOv8}
 \subsubsection{YOLOv11}
 \subsubsection{YOLOv12}
+The YOLOv12 model was trained for 100 epochs using the Ultralytics framework. As a state-of-the-art one-stage detector, YOLOv12 utilizes an optimized backbone and neck architecture designed to maximize feature extraction efficiency while maintaining high inference speeds.
+
+The model achieved the following peak performance metrics on the validation set:
+\begin{itemize}
+    \item mAP@.50: 81.72\%
+    \item mAP@.50:.95: 70.45\%
+    \item Precision: 90.02\%
+    \item Recall: 79.78\%
+\end{itemize}
+
+Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly efficient learning curve, with the model surpassing 50\% mAP within the first few epochs. The model maintained a consistent, stable trajectory, for the validation classification loss ($L_{val\_cls}$) eventually settling at 0.686. This suggests that the YOLOv12 architecture, likely aided by Distribution Focal Loss (DFL) and advanced data augmentation, is resilient to categorical overfitting on this specific dataset.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{yolo12results.png}
+    \caption{YOLOv12 Training Metrics.}\label{fig:yolo_perf}
+\end{figure}
+
+\subsection{Comparison between the different detectors}
+\subsubsection{COCO-based vs YOLO-based Detectors}
+
+\subsubsection{Sign Attribute Comparison}
+
+\subsubsection{All Detectors together}
 
 \newpage
 \pagenumbering{roman}
