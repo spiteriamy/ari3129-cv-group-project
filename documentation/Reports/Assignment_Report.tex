@@ -261,8 +261,8 @@ All implementations enabled TensorBoard logging for real-time training visualiza
 \section{Evaluation of the object detectors}
 % Presentation of results, including metrics and visualizations.
 
-\newpage
-\pagenumbering{roman}
+\subsection{COCO-based Detectors}
+
 \subsubsection{EfficientDet}
 The EfficientDet model was evaluated using a classification-based approach on ground truth crops due to limited training resources and time constraints. The model achieved an overall validation accuracy of 44.12\% after 30 epochs.
 
@@ -277,6 +277,18 @@ The per-class accuracy breakdown highlights significant performance variance:
 \end{itemize}
 These results indicate that while the model successfully learned features for distinct signs like 'No Entry', it struggled significantly with others, likely due to class imbalance or insufficient training data for those specific categories.
 
+\subsubsection{Faster R-CNN}
+
+\subsubsection{RetinaNet}
+\subsubsection{RF-DETR}
+
+\subsection{YOLO-based Detectors}
+\subsubsection{YOLOv8}
+\subsubsection{YOLOv11}
+\subsubsection{YOLOv12}
+
+\newpage
+\pagenumbering{roman}
 \section{References and List of Resources Used}
 
 \begin{thebibliography}{99}
