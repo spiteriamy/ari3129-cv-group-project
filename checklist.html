@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTSD Project Checklist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for UI elements -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .task-description-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-out;
+        }
+
+        .task-description-wrapper.open {
+            grid-template-rows: 1fr;
+        }
+
+        .task-description-inner {
+            overflow: hidden;
+        }
+
+        /* Custom checkbox style */
+        .checkbox-wrapper input:checked+div {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .checkbox-wrapper input:checked+div svg {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen pb-10">
+
+    <div id="app" class="max-w-4xl mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900">Maltese Traffic Sign Detection</h1>
+                    <p class="text-slate-500 mt-1">Group Project Management Tool (ARI3129)</p>
+                </div>
+                <div class="text-right">
+                    <button onclick="resetData()" class="text-xs text-red-400 hover:text-red-600 underline">Reset All
+                        Data</button>
+                </div>
+            </div>
+
+            <!-- Overall Progress -->
+            <div class="mt-6 bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold text-slate-700">Total Project Completion</span>
+                    <span id="total-progress-text" class="text-xl font-bold text-indigo-600">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-3">
+                    <div id="total-progress-bar"
+                        class="bg-indigo-600 h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Member Tabs -->
+        <div class="flex overflow-x-auto gap-2 mb-0 pb-1 border-b border-slate-200 no-scrollbar" id="tab-container">
+            <!-- Tabs injected by JS -->
+        </div>
+
+        <!-- Task Content -->
+        <div
+            class="bg-white rounded-b-2xl rounded-tr-2xl shadow-lg border border-slate-200 min-h-[500px] flex flex-col">
+            <!-- Toolbar -->
+            <div
+                class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 rounded-tr-2xl">
+                <div>
+                    <h2 id="active-tab-title" class="text-xl font-bold text-slate-800">Member Section</h2>
+                    <p id="active-tab-role" class="text-sm text-slate-500 font-medium">Role Description</p>
+                </div>
+                <button onclick="openAddModal()"
+                    class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm hover:shadow text-sm font-semibold">
+                    <i class="ph ph-plus-bold"></i> Add Task
+                </button>
+            </div>
+
+            <!-- List -->
+            <div id="task-list" class="divide-y divide-slate-100 flex-grow">
+                <!-- Tasks injected by JS -->
+            </div>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="empty-state" class="hidden flex-col items-center justify-center py-16 text-center text-slate-400">
+                <i class="ph ph-check-square text-4xl mb-2 opacity-50"></i>
+                <p>No tasks found for this section.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Add Modal -->
+    <div id="modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all scale-100">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 id="modal-title" class="text-lg font-bold text-slate-800">Edit Task</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="ph ph-x-bold text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Task
+                        Title</label>
+                    <input type="text" id="modal-input-title"
+                        class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                        placeholder="e.g. Train YOLOv8">
+                </div>
+                <div>
+                    <label
+                        class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Description</label>
+                    <textarea id="modal-input-desc" rows="4"
+                        class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                        placeholder="Add details..."></textarea>
+                </div>
+                <input type="hidden" id="modal-task-id">
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="closeModal()"
+                    class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition">Cancel</button>
+                <button onclick="saveModal()"
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition shadow-sm">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & STATE ---
+
+        const defaultData = [
+            {
+                id: 'm1',
+                name: 'Member 1',
+                role: 'Faster R-CNN & YOLOv12 | Sign Shape',
+                tasks: [
+                    { id: 'm1-t1', text: 'Capture 50+ traffic sign images', desc: 'Must include front, side, and back views. Focus on: Stop, No Entry, Pedestrian, Roundabout, No Through Road, Blind-Spot Mirrors.', done: false },
+                    { id: 'm1-t2', text: 'Anonymize images (GDPR)', desc: 'Use generative inpainting to remove faces and license plates.', done: false },
+                    { id: 'm1-t3', text: 'Annotate: Sign Shape', desc: 'Labels: Circle, Square, Triangle, Octagonal, Damaged.', done: false },
+                    { id: 'm1-t4', text: 'Train Model A: Faster R-CNN', desc: 'General detection model. Use PyTorch/TensorFlow.', done: false },
+                    { id: 'm1-t5', text: 'Train Model B: YOLOv12', desc: 'Attribute classification for "Sign Shape".', done: false },
+                    { id: 'm1-t6', text: 'Create Notebook 2a', desc: 'Documentation for Faster R-CNN training.', done: false },
+                    { id: 'm1-t7', text: 'Create Notebook 2b', desc: 'Documentation for YOLOv12 (Shape) training.', done: false }
+                ]
+            },
+            {
+                id: 'm2',
+                name: 'Member 2',
+                role: 'EfficientDet & YOLOv8 | Viewing Angle',
+                tasks: [
+                    { id: 'm2-t1', text: 'Capture 50+ traffic sign images', desc: 'Must include front, side, and back views. Focus on: Stop, No Entry, Pedestrian, Roundabout, No Through Road, Blind-Spot Mirrors.', done: false },
+                    { id: 'm2-t2', text: 'Anonymize images (GDPR)', desc: 'Use generative inpainting to remove faces and license plates.', done: false },
+                    { id: 'm2-t3', text: 'Annotate: Viewing Angle', desc: 'Labels: Front, Side, Back.', done: false },
+                    { id: 'm2-t4', text: 'Train Model A: EfficientDet', desc: 'General detection model. Use PyTorch/TensorFlow.', done: false },
+                    { id: 'm2-t5', text: 'Train Model B: YOLOv8', desc: 'Attribute classification for "Viewing Angle".', done: false },
+                    { id: 'm2-t6', text: 'Create Notebook 2a', desc: 'Documentation for EfficientDet training.', done: false },
+                    { id: 'm2-t7', text: 'Create Notebook 2b', desc: 'Documentation for YOLOv8 (Angle) training.', done: false }
+                ]
+            },
+            {
+                id: 'm3',
+                name: 'Member 3',
+                role: 'RF-DETR & YOLOv8 | Sign Condition',
+                tasks: [
+                    { id: 'm3-t1', text: 'Capture 50+ traffic sign images', desc: 'Must include front, side, and back views. Avoid flash reflection at night.', done: false },
+                    { id: 'm3-t2', text: 'Anonymize images (GDPR)', desc: 'Use generative inpainting to remove faces and license plates.', done: false },
+                    { id: 'm3-t3', text: 'Annotate: Sign Condition', desc: 'Labels: Good, Weathered (faded/scratched), Heavily Damaged.', done: false },
+                    { id: 'm3-t4', text: 'Train Model A: RF-DETR', desc: 'General detection model.', done: false },
+                    { id: 'm3-t5', text: 'Train Model B: YOLOv8', desc: 'Attribute classification for "Sign Condition".', done: false },
+                    { id: 'm3-t6', text: 'Create Notebook 2a', desc: 'Documentation for RF-DETR training.', done: false },
+                    { id: 'm3-t7', text: 'Create Notebook 2b', desc: 'Documentation for YOLOv8 (Condition) training.', done: false }
+                ]
+            },
+            {
+                id: 'm4',
+                name: 'Member 4',
+                role: 'RetinaNet & YOLOv11 | Mounting Type',
+                tasks: [
+                    { id: 'm4-t1', text: 'Capture 50+ traffic sign images', desc: 'Must include front, side, and back views.', done: false },
+                    { id: 'm4-t2', text: 'Anonymize images (GDPR)', desc: 'Use generative inpainting to remove faces and license plates.', done: false },
+                    { id: 'm4-t3', text: 'Annotate: Mounting Type', desc: 'Labels: Wall-mounted, Pole-mounted.', done: false },
+                    { id: 'm4-t4', text: 'Train Model A: RetinaNet', desc: 'General detection model.', done: false },
+                    { id: 'm4-t5', text: 'Train Model B: YOLOv11', desc: 'Attribute classification for "Mounting Type".', done: false },
+                    { id: 'm4-t6', text: 'Create Notebook 2a', desc: 'Documentation for RetinaNet training.', done: false },
+                    { id: 'm4-t7', text: 'Create Notebook 2b', desc: 'Documentation for YOLOv11 (Mounting) training.', done: false }
+                ]
+            },
+            {
+                id: 'group',
+                name: 'Group Tasks',
+                role: 'Consolidation, Documentation & GitHub',
+                tasks: [
+                    { id: 'g-t1', text: 'Data Consolidation', desc: 'Merge all 4 member JSON/ZIP files into one master COCO dataset.', done: false },
+                    { id: 'g-t2', text: 'Check Balance', desc: 'Analyze class distribution (Sign Types & Attributes). Report in docs.', done: false },
+                    { id: 'g-t3', text: 'Notebook: Data Visualization', desc: 'Create 1_data_visualisation.ipynb with stats and charts.', done: false },
+                    { id: 'g-t4', text: 'Notebook: Results Comparison', desc: 'Create 2c_results_comparison.ipynb comparing all models (mAP).', done: false },
+                    { id: 'g-t5', text: 'Write Main Report', desc: 'Max 20 pages. PDF format. Sections: Intro, Background, Data, Implementation, Evaluation, Refs.', done: false },
+                    { id: 'g-t6', text: 'Write GenAI Journal', desc: 'Max 10 pages. Prompts, ethical considerations, reflections.', done: false },
+                    { id: 'g-t7', text: 'Final GitHub Polish', desc: 'Ensure Dataset folder structure, README.md, and all 5 notebooks are present.', done: false }
+                ]
+            }
+        ];
+
+        let appData = JSON.parse(localStorage.getItem('mtsd_project_data')) || defaultData;
+        let activeTabId = localStorage.getItem('mtsd_active_tab') || 'm1';
+
+        // --- CORE FUNCTIONS ---
+
+        function saveData() {
+            localStorage.setItem('mtsd_project_data', JSON.stringify(appData));
+            updateProgress();
+        }
+
+        function resetData() {
+            if (confirm('Are you sure you want to reset all progress and customizations?')) {
+                localStorage.removeItem('mtsd_project_data');
+                location.reload();
+            }
+        }
+
+        function updateProgress() {
+            let total = 0;
+            let completed = 0;
+
+            appData.forEach(member => {
+                member.tasks.forEach(task => {
+                    total++;
+                    if (task.done) completed++;
+                });
+            });
+
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            document.getElementById('total-progress-text').textContent = `${percentage}%`;
+            document.getElementById('total-progress-bar').style.width = `${percentage}%`;
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tab-container');
+            container.innerHTML = '';
+
+            appData.forEach(member => {
+                const isActive = member.id === activeTabId;
+                const btn = document.createElement('button');
+
+                // Style calculation
+                let baseClasses = "px-6 py-3 rounded-t-lg font-medium text-sm transition-all whitespace-nowrap border-t border-l border-r ";
+                if (isActive) {
+                    baseClasses += "bg-white border-slate-200 text-indigo-600 border-b-white -mb-px relative z-10 shadow-[0_-2px_10px_rgba(0,0,0,0.02)]";
+                } else {
+                    baseClasses += "bg-slate-100 border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-200";
+                }
+
+                btn.className = baseClasses;
+                btn.textContent = member.name;
+                btn.onclick = () => switchTab(member.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            localStorage.setItem('mtsd_active_tab', id);
+            renderTabs();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const member = appData.find(m => m.id === activeTabId);
+            if (!member) return;
+
+            // Update Header
+            document.getElementById('active-tab-title').textContent = member.name;
+            document.getElementById('active-tab-role').textContent = member.role;
+
+            const listContainer = document.getElementById('task-list');
+            listContainer.innerHTML = '';
+
+            // Empty State
+            if (member.tasks.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+            } else {
+                document.getElementById('empty-state').classList.add('hidden');
+                document.getElementById('empty-state').classList.remove('flex');
+            }
+
+            member.tasks.forEach(task => {
+                const div = document.createElement('div');
+                div.className = "group hover:bg-slate-50 transition-colors duration-200";
+                div.innerHTML = `
+                    <div class="p-4 flex gap-4 items-start">
+                        <!-- Checkbox -->
+                        <div class="checkbox-wrapper pt-1 cursor-pointer" onclick="toggleTask('${task.id}')">
+                            <input type="checkbox" class="hidden" ${task.done ? 'checked' : ''}>
+                            <div class="w-6 h-6 border-2 border-slate-300 rounded-md bg-white flex items-center justify-center transition-all">
+                                <svg class="w-4 h-4 text-white hidden pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="flex-grow min-w-0 cursor-pointer" onclick="toggleDescription('${task.id}')">
+                            <div class="flex justify-between items-start">
+                                <span class="font-medium text-slate-800 ${task.done ? 'line-through text-slate-400' : ''} select-none transition-all">${task.text}</span>
+                                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                                    <button onclick="event.stopPropagation(); openEditModal('${task.id}')" class="text-slate-400 hover:text-indigo-600 p-1 rounded hover:bg-indigo-50" title="Edit">
+                                        <i class="ph ph-pencil-simple"></i>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); deleteTask('${task.id}')" class="text-slate-400 hover:text-red-600 p-1 rounded hover:bg-red-50" title="Delete">
+                                        <i class="ph ph-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Expandable Description -->
+                            <div id="desc-wrapper-${task.id}" class="task-description-wrapper">
+                                <div class="task-description-inner pt-2 text-sm text-slate-500 leading-relaxed">
+                                    ${task.desc || 'No description provided.'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        // --- ACTIONS ---
+
+        function toggleTask(taskId) {
+            const member = appData.find(m => m.id === activeTabId);
+            const task = member.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.done = !task.done;
+                saveData();
+                renderTasks(); // Re-render to update strikethrough
+            }
+        }
+
+        function toggleDescription(taskId) {
+            const el = document.getElementById(`desc-wrapper-${taskId}`);
+            if (el) {
+                el.classList.toggle('open');
+            }
+        }
+
+        function deleteTask(taskId) {
+            const member = appData.find(m => m.id === activeTabId);
+            if (confirm('Delete this task?')) {
+                member.tasks = member.tasks.filter(t => t.id !== taskId);
+                saveData();
+                renderTasks();
+            }
+        }
+
+        // --- MODAL LOGIC ---
+
+        let isEditing = false;
+        let editingTaskId = null;
+
+        function openAddModal() {
+            isEditing = false;
+            document.getElementById('modal-title').textContent = "Add New Task";
+            document.getElementById('modal-input-title').value = "";
+            document.getElementById('modal-input-desc').value = "";
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        function openEditModal(taskId) {
+            const member = appData.find(m => m.id === activeTabId);
+            const task = member.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            isEditing = true;
+            editingTaskId = taskId;
+            document.getElementById('modal-title').textContent = "Edit Task";
+            document.getElementById('modal-input-title').value = task.text;
+            document.getElementById('modal-input-desc').value = task.desc;
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+        }
+
+        function saveModal() {
+            const title = document.getElementById('modal-input-title').value.trim();
+            const desc = document.getElementById('modal-input-desc').value.trim();
+            const member = appData.find(m => m.id === activeTabId);
+
+            if (!title) {
+                alert("Please enter a task title");
+                return;
+            }
+
+            if (isEditing && editingTaskId) {
+                const task = member.tasks.find(t => t.id === editingTaskId);
+                if (task) {
+                    task.text = title;
+                    task.desc = desc;
+                }
+            } else {
+                const newTask = {
+                    id: Date.now().toString(),
+                    text: title,
+                    desc: desc,
+                    done: false
+                };
+                member.tasks.push(newTask);
+            }
+
+            saveData();
+            renderTasks();
+            closeModal();
+        }
+
+        // Initialize
+        renderTabs();
+        renderTasks();
+        updateProgress();
+
+    </script>
+</body>
+
+</html>
