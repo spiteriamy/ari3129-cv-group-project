@@ -132,7 +132,7 @@ To prepare the dataset for training, the following steps were taken:
 
 Each team member tried to collect a balanced amount of images per class as possible. However, due to some types of signs being less common than others, some imbalances appeared in the final dataset.
 
-The class distribution for the Sign Type (as illustrated in Figure~\ref{fig:dist}) is moderately imbalanced, with No Entry (One Way) signs being the most frequent class (26.19\% of all signs). Pedestrian Crossing (19.17\%), Stop (18.22\%), and Blind-Spot Mirror (16.6\%) have similar representation. However, Roundabout Ahead (11.57\%) and No Through Road (8.25\%) signs appear less frequently. The distribution can be seen in the bar chart below.
+The class distribution for the Sign Type (as illustrated in Figure~\ref{fig:dist}) is moderately imbalanced, with No Entry (One Way) signs being the most frequent class (26.19\% of all signs). Pedestrian Crossing (19.17\%), Stop (18.22\%), and Blind-Spot Mirror (16.6\%) have similar representation. However, Roundabout Ahead (11.57\%) and No Through Road (8.25\%) signs appear less frequently.
 
 \begin{figure}
     \centering
@@ -199,6 +199,19 @@ The implementation was executed on hardware consisting of an AMD Ryzen 9 5950X C
 \subsubsection{RetinaNet}
 
 \subsubsection{RF-DETR}
+
+\textcolor{red}{TODO AMY: REWRITE ROUGH POINTS}
+
+\paragraph{Dataset Preparation}
+several steps had to be taken to prepare the dataset for triaing. 1) RF-DETR expects the dataset to contain hree subdirectories: train, valid, and test. Each subdirectory should contain its own \_annotations.coco.json file. the annotation files were renamed and moved to each directory to match this format 2) had to add a supercategory to the annotations in all annotations files. rf-detr expects the categories in the annotations to contain a supercategory. added supercategory to each category - "traffic\_sign" 3) had to adjust the 1-based indexing of the categories in the annotations file to 0-based indexing to resolve index error when beginning the training
+
+\paragraph{Model Architecture} The pretrained RF-DETR Base model was initialized using \verb|RFDETRBase()|. The model was pretrained on the COCO dataset.
+
+\paragraph{Training Configuration} Training was performed using the built-in \verb|train()| method from RF-DETR. epochs=100 with early stopping set to true at a pateince of 20. batch\_size=4 and grad\_accum\_steps=4, to total into a total batch size of 16, this was the recommended batch size setup for smaller GPUs. model was trained using colab to make use of gpu. lr=1e-4. lowered the image resolution to 448, slightly lower than the default resolution. used Exponential Moving Average of weights. overall the ema model was performing better during trianing than the base model
+
+\paragraph{Logging and Monitoring} tensorboard was used to monitor and log training metrics. mention map@50:90 issue....
+
+\paragraph{Evaluation Setup}
 
 \subsection{YOLO-based Detectors}
 
@@ -299,7 +312,18 @@ A notable observation in the training dynamics is the divergence in classificati
 \end{figure}
 
 \subsubsection{RetinaNet}
+
+
 \subsubsection{RF-DETR}
+
+\textcolor{red}{TODO AMY: WRITE EVALUATION AND FIX FIGURe}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1.0\textwidth]{rfdetr_metrics_plot.png}
+    \caption{RF-DETR Training Metrics}
+    \label{fig:rf-detr_results}
+\end{figure}
 
 \subsection{YOLO-based Detectors}
 \subsubsection{YOLOv8}
