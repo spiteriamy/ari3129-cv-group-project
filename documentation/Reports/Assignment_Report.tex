@@ -99,6 +99,10 @@ The core innovation is the Region Proposal Network (RPN), a fully convolutional 
 \subsection{RF-DETR}
 
 \subsection{RetinaNet}
+RetinaNet is considered one of the top one-stage object detection models, particularly effective for detecting dense and small-scale objects. Therefore, it has gained popularity as a model for object detection applied to aerial and satellite imagery ~\cite{retinanet}.
+
+RetinaNet enables efficient single-stage object detection through four core components. It uses a ResNet backbone to generate feature maps at various resolutions, which feed into a top-down pathway that forms a Feature Pyramid Network (FPN). This FPN combines low-resolution, semantically strong features with high-resolution, spatially detailed features for robust multi-scale detection. At each FPN level, there are two subnetworks: one for class probability predictions (classification subnetwork) and another for bounding-box offsets (regression subnetwork) ~\cite{retinanet}. A key innovation is the use of Focal Loss, which addresses class imbalance by focusing training on challenging examples, allowing RetinaNet to achieve high accuracy while maintaining the speed of a one-stage detector ~\cite{viso_retinanet}.
+
 
 \subsection{EfficientDet}
 EfficientDet~\cite{efficientdet} is an object detection architecture that prioritizes efficiency and scalability. It builds upon the EfficientNet~\cite{efficientnet} backbone and introduces two key innovations: the Weighted Bi-directional Feature Pyramid Network (BiFPN) and a compound scaling method.
@@ -395,6 +399,12 @@ Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly ef
 
     \bibitem{yolo}
     J. Redmon, S. Divvala, R. Girshick, and A. Farhadi, ``You Only Look Once: Unified, Real-Time Object Detection,'' in \textit{Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, Las Vegas, NV, USA, 2016, pp. 779--788.
+
+    \bibitem{retinanet}
+    T. Y. Lin, P. Goyal, R. Girshick, K. He, and P. Doll\'{a}r, ``Focal Loss for Dense Object Detection,'' in \textit{Proceedings of the IEEE International Conference on Computer Vision (ICCV)}, Venice, Italy, 2017, pp. 2980--2988.
+
+    \bibitem{viso_retinanet}
+    Viso.ai, ``RetinaNet: The Definitive Guide (2025),'' \textit{Viso.ai Blog}, 2022. [Online]. Available: \url{https://viso.ai/deep-learning/retinanet/}. [Accessed: 30-Jan-2025].
 
     \bibitem{efficientdet}
     M. Tan, R. Pang, and Q. V. Le, ``EfficientDet: Scalable and Efficient Object Detection,'' in \textit{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, Seattle, WA, USA, 2020, pp. 10781--10790.
