@@ -201,6 +201,11 @@ Training progress was monitored using TensorBoard for real-time visualization of
 The implementation was executed on hardware consisting of an AMD Ryzen 9 5950X CPU (16 cores/32 threads), 64 GB RAM, and an NVIDIA GeForce RTX 5070 Ti GPU with 16 GB VRAM, using CUDA 13.1 for acceleration.
 
 \subsubsection{RetinaNet}
+The RetinaNet model utilized in this study implements the \texttt{retinanet\_resnet50\_fpn\_v2} architecture provided by the Torchvision library. This architecture employs a ResNet-50 backbone integrated with a Feature Pyramid Network (FPN) to extract multi-scale feature representations. To accommodate our specific traffic sign dataset, which consists of six object classes plus a background class, the default classification head was replaced with a custom \texttt{RetinaNetClassificationHead}. This modification enables the model to output predictions for seven distinct classes. The model is initialized via a specialized \texttt{build\_retinanet()} function, which loads the pre-trained weights for the FPN backbone and configures the classification head according to the required output dimensions.
+
+\subsubsection*{Dataset Preparation}
+Training and validation data were managed using a custom \texttt{CocoDetectionDataset} class, designed to parse COCO-formatted JSON annotations and apply image transformations defined within the \texttt{get\_transform()} function. Preparatory steps included the extraction of image data from compressed archives via \texttt{extract\_images\_zip()} and the rectification of annotation syntax using the \texttt{fix\_coco\_json()} utility. Both the training and validation data loaders were configured with a batch size of 2. To accommodate variable-length target dictionaries and bounding box counts inherent in object detection, a custom \texttt{collate\_fn} was implemented for batching.
+
 
 \subsubsection{RF-DETR}
 
