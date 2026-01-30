@@ -328,6 +328,24 @@ A notable observation in the training dynamics is the divergence in classificati
 \subsection{YOLO-based Detectors}
 \subsubsection{YOLOv8}
 \subsubsection{YOLOv11}
+The YOLOv11 model underwent training for 100 epochs utilizing the Ultralytics framework. As a high-performance one-stage detector, YOLOv11 adopts a three-stage backbone–neck–head architecture with improved feature fusion, designed to balance representational capacity with real-time inference requirements.
+
+The model achieved the following peak performance metrics on the validation set:
+\begin{itemize}
+\item mAP@.50: 65.44\%
+\item mAP@.50:.95: 55.12\%
+\item Precision (mean over classes): 74.62\%
+\item Recall (mean over classes): 58.71\%
+\end{itemize}
+
+As illustrated in Figure \ref{fig:yolo11}, the training results demonstrate an efficient and stable learning progression. The model achieved over 50\% mAP within the initial epochs and continued to improve steadily throughout training. The validation classification loss ($L_{val_cls}$) stabilised at roughly 0.686, indicating stable generalisation. The YOLOv11 architecture, enhanced by DFL and advanced augmentation, effectively reduces categorical overfitting in this dataset.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{yolo11results.png}
+    \caption{YOLOv11 Training Metrics.}\label{fig:yolo11}
+\end{figure}
+
 \subsubsection{YOLOv12}
 The YOLOv12 model was trained for 100 epochs using the Ultralytics framework. As a state-of-the-art one-stage detector, YOLOv12 utilizes an optimized backbone and neck architecture designed to maximize feature extraction efficiency while maintaining high inference speeds.
 
