@@ -98,10 +98,11 @@ The core innovation is the Region Proposal Network (RPN), a fully convolutional 
 
 \subsection{RF-DETR}
 
-RF-DETR \cite{rf-detr} is a state-of-the-art real-time object detection and instance segmentation model developed by Roboflow. 
+RF-DETR \cite{rf-detr} is a state-of-the-art real-time object detection and instance segmentation model developed by Roboflow. It belongs to the DETR (DEtection TRansformer) framework for object detection systems, which combines a common CNN backbone with a transformer encoder-decoder architecture \cite{detr}. RF-DETR advances this line of work by improving the trade-off between high accuracy and fast inference that was observed in previous works, making it suitable for both high performance and real-time applications. The model integrates internet-scale pretraining to overcome the limitations of previous specialist detectors that overfit to specific benchmarks like COCO \cite{rf-detr}.
 
-RF-DETR is evaluated on the Microsoft COCO and RF100-VL datasets. The authors in \cite{rf-detr} demonstrate that RF-DETR consistently outperforms other models and achieves state-of-the-art results in both object detection and instance segmentation.
+RF-DETR makes use of a pre-trained DINOv2 \cite{dinov2} vision transformer backbone. The use of DINOv2 improves detection accuracy on smaller datasets, however the number of layers in its encoder also contributes to higher latency. However, this is compensated for through the use of NAS. A key contribution from the RF-DETR research is the use of Neural Architecture Search (NAS) to explore and evaluate many model configurations to find the optimal accuracy-latency Pareto curve for the different configurations. This allows the model to train many different  configurations in parallel which enables RF-DETR to adapt to various datasets and hardware platforms without re-training.
 
+RF-DETR is evaluated on the Microsoft COCO and Roboflow100-VL (RF100-VL) datasets. The authors in \cite{rf-detr} demonstrate that RF-DETR consistently outperforms other models and achieves state-of-the-art results in both object detection and instance segmentation. RF-DETR sets a new standard as the first real-time object detector to exceed 60 AP on the COCO dataset.
 
 \subsection{RetinaNet}
 RetinaNet is considered one of the top one-stage object detection models, particularly effective for detecting dense and small-scale objects. Therefore, it has gained popularity as a model for object detection applied to aerial and satellite imagery ~\cite{retinanet}.
@@ -411,7 +412,11 @@ Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly ef
     \bibitem{rf-detr}
     I. Robinson, P. Robicheaux, M. Popov, D. Ramanan, and N. Peri, ``RF-DETR: Neural Architecture Search for Real-Time Detection Transformers,'' arXiv preprint arXiv:2511.09554, 2025. [Online]. Available: https://arxiv.org/abs/2511.09554
     
-
+    \bibitem{detr}
+    N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, and S. Zagoruyko, ``End-to-End Object Detection with Transformers,'' in \textit{Computer Vision -- ECCV 2020}, A. Vedaldi, H. Bischof, T. Brox, and JM. Frahm, Eds. Cham, Switzerland: Springer, 2020, pp. 213--229.
+    
+    \bibitem{dinov2}
+    M. Oquab et al., ``DINOv2: Learning Robust Visual Features without Supervision,'' arXiv preprint arXiv:2304.07193, 2024. [Online]. Available: https://arxiv.org/abs/2304.07193
 
     \bibitem{yolo}
     J. Redmon, S. Divvala, R. Girshick, and A. Farhadi, ``You Only Look Once: Unified, Real-Time Object Detection,'' in \textit{Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, Las Vegas, NV, USA, 2016, pp. 779--788.
@@ -431,7 +436,9 @@ Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly ef
 
     \bibitem{antigravity}
     Google DeepMind, ``Antigravity: Advanced Agentic Coding Assistant,'' 2026. [Online].
+
 \end{thebibliography}
+
 
 
 \end{document}
