@@ -540,8 +540,13 @@ Upon inspection of the precision-recall curve (Figure~\ref{fig:yolo12_pr}), it b
 
 
 \subsection{Comparison between the different detectors}
+
 \textbf{\color{red} add explanation of what map is \& why we chose it, explain disstinction between 50 and 50-95} % todo: this
-During training, each team member was instructed to log their model's performance. Specifically, the two metrics we decided to focus on were mAP@50 and mAP@50:95, as these are the standard metrics used in object detection tasks.
+
+During training, each team member was instructed to log their model's performance. To evaluate our object detection models, we used mean Average Precision (mAP), which is the standard performance metric in modern object detection benchmarks such as COCO. mAP measures how well a model both detects objects and localizes them accurately within an image. Specifically, the two metrics we decided to focus on were mAP@50 and mAP@50:95. The mAP@50 metric uses a single IoU threshold of 0.50. A detection is counted as correct if the predicted bounding box overlaps the ground-truth box by at least 50\%. This metric is more lenient, and focuses more on whether the object was detected than on extremely precise localization. The mAP@50:95 metric is stricter and more comprehensive. Instead of using only one IoU threshold, it uses multiple IoU thresholds from 0.50 to 0.95. This means 
+
+
+
 
 In order to compare the performance of all the trained detectors, a robust script was required since, although all team members were using the same dataset, and aiming to capture the same metrics, slight variations in the implementation methods meant that the outputs required some `massaging' to be comparable. A brief outline of the steps taken to achieve this is provided below, while the full implementation can be found in the 2c notebook.
 
