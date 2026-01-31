@@ -11,6 +11,7 @@
 \usepackage{ragged2e}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{subcaption}
 
 \lstdefinestyle{py}{
     basicstyle=\ttfamily\small,                 % Use a monospaced font
@@ -322,7 +323,7 @@ A notable observation in the training dynamics is the divergence in classificati
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1.0\textwidth]{fasterrcnnperf.png}
+    \includegraphics[width=0.8\textwidth]{fasterrcnnperf.png}
     \caption{Faster R-CNN Training Performance Metrics.}\label{fig:rcnn_map}
 \end{figure}
 
@@ -335,7 +336,7 @@ A notable observation in the training dynamics is the divergence in classificati
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1.0\textwidth]{rfdetr_metrics_plot.png}
+    \includegraphics[width=0.8\textwidth]{rfdetr_metrics_plot.png}
     \caption{RF-DETR Training Metrics}
     \label{fig:rf-detr_results}
 \end{figure}
@@ -347,17 +348,17 @@ The YOLOv11 model underwent training for 100 epochs utilizing the Ultralytics fr
 
 The model achieved the following peak performance metrics on the validation set:
 \begin{itemize}
-\item mAP@.50: 65.44\%
-\item mAP@.50:.95: 55.12\%
-\item Precision (mean over classes): 74.62\%
-\item Recall (mean over classes): 58.71\%
+    \item mAP@.50: 65.44\%
+    \item mAP@.50:.95: 55.12\%
+    \item Precision (mean over classes): 74.62\%
+    \item Recall (mean over classes): 58.71\%
 \end{itemize}
 
 As illustrated in Figure \ref{fig:yolo11}, the training results demonstrate an efficient and stable learning progression. The model achieved over 50\% mAP within the initial epochs and continued to improve steadily throughout training. The validation classification loss ($L_{val_cls}$) stabilised at roughly 0.686, indicating stable generalisation. The YOLOv11 architecture, enhanced by DFL and advanced augmentation, effectively reduces categorical overfitting in this dataset.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=1.0\textwidth]{yolo11results.png}
+    \includegraphics[width=0.8\textwidth]{yolo11results.png}
     \caption{YOLOv11 Training Metrics.}\label{fig:yolo11}
 \end{figure}
 
@@ -372,20 +373,91 @@ The model achieved the following peak performance metrics on the validation set:
     \item Recall: 79.78\%
 \end{itemize}
 
-Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly efficient learning curve, with the model surpassing 50\% mAP within the first few epochs. The model maintained a consistent, stable trajectory, for the validation classification loss ($L_{val\_cls}$) eventually settling at 0.686. This suggests that the YOLOv12 architecture, likely aided by Distribution Focal Loss (DFL) and advanced data augmentation, is resilient to categorical overfitting on this specific dataset.
+Analysis of the training results in Figure~\ref{fig:yolo12_perf} shows a highly efficient learning curve, with the model surpassing 50\% mAP within the first few epochs. The model maintained a consistent, stable trajectory, for the validation classification loss ($L_{val\_cls}$) eventually settling at 0.686. This suggests that the YOLOv12 architecture, likely aided by Distribution Focal Loss (DFL) and advanced data augmentation, is resilient to categorical overfitting on this specific dataset.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=1.0\textwidth]{yolo12results.png}
-    \caption{YOLOv12 Training Metrics.}\label{fig:yolo_perf}
+    \includegraphics[width=0.8\textwidth]{yolo12results.png}
+    \caption{YOLOv12 Training Metrics.}\label{fig:yolo12_perf}
 \end{figure}
 
+Upon inspection of the precision-recall curve (Figure~\ref{fig:yolo12_pr}), it became evident that the model achieved similar performance across all classes except `Pedestrian Crossing'. This is further corroborated by the confusion matrix (Figure~\ref{fig:yolo12_cm}), which shows a higher incidence of misclassifications for this class compared to others. The `Pedestrian Crossing' signs were often confused with `Roundabout Ahead' and `No Through Road (T-Sign)' signs, but mostly with the background class. This suggests that the model struggled to distinguish `Pedestrian Crossing' signs from other similar sign types, potentially due to their visual similarities or insufficient representation in the training data, which is a surprising outcome given that `Pedestrian Crossing' signs were the second most common sign type in the dataset.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{yolo12pr.png}
+        \caption{Precision-Recall Curve}\label{fig:yolo12_pr}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{yolo12cm.png}
+        \caption{Confusion Matrix}\label{fig:yolo12_cm}
+    \end{subfigure}
+    \caption{Precision-Recall Curve and Confusion Matrix for YOLOv12}\label{fig:yolo12_pr_cm}
+\end{figure}
+
+
+
 \subsection{Comparison between the different detectors}
+During training, each team member was instructed to log their model's performance. Specifically, the two metrics we decided to focus on were mAP@50 and mAP@50:95, as these are the standard metrics used in object detection tasks.
+
+In order to compare the performance of all the trained detectors, a robust script was required since, although all team members were using the same dataset, and aiming to capture the same metrics, slight variations in the implementation methods meant that the outputs required some `massaging' to be comparable. A brief outline of the steps taken to achieve this is provided below, while the full implementation can be found in the 2c notebook.
+
+\begin{enumerate}
+    \item Each model's results were saved and logged after every epoch during training. These logs were written to an events file for real-time monitoring of training progress using TensorBoard.
+    \item After each member completed training their specific models, the events files were collected and organized into a shared folder.
+    \item In the 2c notebook, the events files were parsed and the specific results of each model (mAP@50, mAP@50:95) were plotted (shown in Figure~\ref{fig:map_broken}).
+    \item After noticing many duplicate/incomplete results in the initial plots, the following heuristics were applied to clean the data:
+          \begin{itemize}
+              \item Remove duplicate results.
+              \item Merge results from the same runs that were split across multiple events files.
+              \item Disregard plots with missing metrics.
+              \item Only keep the single best / longest run for each model.
+          \end{itemize}
+    \item The cleaned results were then re-plotted to produce the final comparison graphs (shown in Figure~\ref{fig:map_all} in Section~\ref{sec:all-together}).
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{map_broken.png}
+    \caption{Comparison of mAP across different detectors}\label{fig:map_broken}
+\end{figure}
+
+\subsubsection{All Detectors together}\label{sec:all-together}
+The performance of all implemented models was aggregated to compare their learning trajectories and final accuracy, as illustrated in Figure~\ref{fig:map_all}. The evaluation focused on two primary metrics: mAP@50 and mAP@50-95.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{map_all.png}
+    \caption{Comparison of mAP across after fixing}\label{fig:map_all}
+\end{figure}
+
+As seen in the results, \textbf{YOLOv12} (red line) emerged as the superior model, achieving the highest peak performance with an mAP@50 exceeding $0.80$ and an mAP@50-95 reaching approximately $0.70$. It demonstrated rapid convergence, stabilizing after roughly 40 steps. \textbf{Faster R-CNN} (brown line) and \textbf{rf-detr} (pink line) followed closely, maintaining competitive mAP@50 scores around $0.75-0.78$. These results suggest that the two-stage and transformer-based architectures are highly effective for this dataset's specific traffic sign features.
+
+
+
+The detectors trained on specific sign attributes (prefixed with \texttt{SIGN\_ATTR}) showed varying degrees of success:
+
+\begin{itemize}
+    \item \textbf{Sign-shape} and \textbf{Viewing-angle} performed robustly, aligning with the mid-tier YOLO models with mAP@50 scores between $0.65$ and $0.75$.
+    \item \textbf{Mounting-type} (orange line) exhibited a much slower learning curve, likely due to the extreme class imbalance (87\% pole-mounted) noted in the data preparation section. It required the full 100 steps to reach an mAP@50 of $0.65$.
+    \item \textbf{Sign-condition} (light green line) was the worst performer among the attribute detectors, plateauing early at an mAP@50 of roughly $0.30$. This is directly attributable to the severe underrepresentation of damaged signs ($3.8\%$) in the dataset.
+\end{itemize}
+
+While \textbf{YOLOv8-amy} and \textbf{YOLOv11} showed stable, consistent growth, \textbf{EfficientDet} (purple line) failed to scale effectively, terminating early with significantly lower accuracy. The volatility observed in \textbf{YOLOv8-joachim} suggests that hardware-constrained optimizations (reduced resolution and batch size) introduced noise into the training process, though the model eventually reached a respectable mAP@50 of $0.75$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{map_cat.png}
+    \caption{Comparison of Inference Times across different detectors}\label{fig:map_cat}
+\end{figure}
+
+
 \subsubsection{COCO-based vs YOLO-based Detectors}
 
 \subsubsection{Sign Attribute Comparison}
-
-\subsubsection{All Detectors together}
 
 \newpage
 \pagenumbering{roman}
@@ -411,10 +483,10 @@ Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly ef
 
     \bibitem{rf-detr}
     I. Robinson, P. Robicheaux, M. Popov, D. Ramanan, and N. Peri, ``RF-DETR: Neural Architecture Search for Real-Time Detection Transformers,'' arXiv preprint arXiv:2511.09554, 2025. [Online]. Available: https://arxiv.org/abs/2511.09554
-    
+
     \bibitem{detr}
     N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, and S. Zagoruyko, ``End-to-End Object Detection with Transformers,'' in \textit{Computer Vision -- ECCV 2020}, A. Vedaldi, H. Bischof, T. Brox, and JM. Frahm, Eds. Cham, Switzerland: Springer, 2020, pp. 213--229.
-    
+
     \bibitem{dinov2}
     M. Oquab et al., ``DINOv2: Learning Robust Visual Features without Supervision,'' arXiv preprint arXiv:2304.07193, 2024. [Online]. Available: https://arxiv.org/abs/2304.07193
 
