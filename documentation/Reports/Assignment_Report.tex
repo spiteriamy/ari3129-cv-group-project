@@ -1,4 +1,4 @@
-﻿\documentclass{article}
+\documentclass{article}
 
 \title{ARI3129 Computer Vision Group Project}
 \author{Daniel Pace, Amy Spiteri, Ellyn Rose Debrincat, Joachim Grech}
@@ -11,6 +11,9 @@
 \usepackage{ragged2e}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{array}
 
 \lstdefinestyle{py}{
     basicstyle=\ttfamily\small,                 % Use a monospaced font
@@ -33,6 +36,12 @@
 \sloppy
 
 \renewcommand{\refname}{\vspace{-1.5em}}
+
+% Centered fixed-width column
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+% Centered auto-stretch column
+\renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
+\renewcommand{\arraystretch}{1.4}
 
 \begin{document}
 
@@ -62,7 +71,7 @@ GitHub repository link: \url{https://github.com/spiteriamy/ari3129-cv-group-proj
 
 \section{Introduction}
 % An overview of the project objectives and scope.
-The Aim of this project was to implement and evaluate various object detection algorithms on a custom dataset. The project was split up into the following sections:
+The aim of this project was to implement and evaluate various object detection algorithms on a custom dataset. The project was split up into the following sections:
 \begin{itemize}
     \item Building a dataset:
           \begin{enumerate}
@@ -98,7 +107,17 @@ The core innovation is the Region Proposal Network (RPN), a fully convolutional 
 
 \subsection{RF-DETR}
 
+RF-DETR \cite{rf-detr} is a state-of-the-art real-time object detection and instance segmentation model developed by Roboflow. It belongs to the DETR (DEtection TRansformer) framework for object detection systems, which combines a common CNN backbone with a transformer encoder-decoder architecture \cite{detr}. RF-DETR advances this line of work by improving the trade-off between high accuracy and fast inference that was observed in previous works, making it suitable for both high performance and real-time applications. The model integrates internet-scale pretraining to overcome the limitations of previous specialist detectors that overfit to specific benchmarks like COCO \cite{rf-detr}.
+
+RF-DETR makes use of a pre-trained DINOv2 \cite{dinov2} vision transformer backbone. The use of DINOv2 improves detection accuracy on smaller datasets, however the number of layers in its encoder also contributes to higher latency. However, this is compensated for through the use of NAS. A key contribution from the RF-DETR research is the use of Neural Architecture Search (NAS) to explore and evaluate many model configurations to find the optimal accuracy-latency Pareto curve for the different configurations. This allows the model to train many different  configurations in parallel which enables RF-DETR to adapt to various datasets and hardware platforms without re-training.
+
+RF-DETR is evaluated on the Microsoft COCO and Roboflow100-VL (RF100-VL) datasets. The authors in \cite{rf-detr} demonstrate that RF-DETR consistently outperforms other models and achieves state-of-the-art results in both object detection and instance segmentation. RF-DETR sets a new standard as the first real-time object detector to exceed 60 AP on the COCO dataset.
+
 \subsection{RetinaNet}
+RetinaNet is considered one of the top one-stage object detection models, particularly effective for detecting dense and small-scale objects. Therefore, it has gained popularity as a model for object detection applied to aerial and satellite imagery ~\cite{retinanet}.
+
+RetinaNet enables efficient single-stage object detection through four core components. It uses a ResNet backbone to generate feature maps at various resolutions, which feed into a top-down pathway that forms a Feature Pyramid Network (FPN). This FPN combines low-resolution, semantically strong features with high-resolution, spatially detailed features for robust multi-scale detection. At each FPN level, there are two subnetworks: one for class probability predictions (classification subnetwork) and another for bounding-box offsets (regression subnetwork) ~\cite{retinanet}. A key innovation is the use of Focal Loss, which addresses class imbalance by focusing training on challenging examples, allowing RetinaNet to achieve high accuracy while maintaining the speed of a one-stage detector ~\cite{viso_retinanet}.
+
 
 \subsection{EfficientDet}
 EfficientDet~\cite{efficientdet} is an object detection architecture that prioritizes efficiency and scalability. It builds upon the EfficientNet~\cite{efficientnet} backbone and introduces two key innovations: the Weighted Bi-directional Feature Pyramid Network (BiFPN) and a compound scaling method.
@@ -134,7 +153,7 @@ Each team member tried to collect a balanced amount of images per class as possi
 
 The class distribution for the Sign Type (as illustrated in Figure~\ref{fig:dist}) is moderately imbalanced, with No Entry (One Way) signs being the most frequent class (26.19\% of all signs). Pedestrian Crossing (19.17\%), Stop (18.22\%), and Blind-Spot Mirror (16.6\%) have similar representation. However, Roundabout Ahead (11.57\%) and No Through Road (8.25\%) signs appear less frequently.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.7\linewidth]{class-dist.png}
     \caption{Class Distribution of Sign Types}\label{fig:dist}
@@ -197,21 +216,31 @@ Training progress was monitored using TensorBoard for real-time visualization of
 The implementation was executed on hardware consisting of an AMD Ryzen 9 5950X CPU (16 cores/32 threads), 64 GB RAM, and an NVIDIA GeForce RTX 5070 Ti GPU with 16 GB VRAM, using CUDA 13.1 for acceleration.
 
 \subsubsection{RetinaNet}
+The RetinaNet model implemented in this study uses the \texttt{retinanet\_resnet50\_fpn\_v2} architecture provided by the Torchvision library. This architecture uses a ResNet-50 backbone integrated with a Feature Pyramid Network (FPN) to extract multi-scale feature representations. To adapt our specific traffic sign dataset,  the default classification head was replaced with a custom \texttt{RetinaNetClassificationHead}. This modification enables the model to output predictions for seven distinct classes. The model is initialised via a specialised \texttt{build\_retinanet()} function, which loads the pre-trained weights for the FPN backbone and configures the classification head according to the required output dimensions.
+
+\subsubsection*{Dataset Preparation}
+Training and validation data were managed using a custom \texttt{CocoDetectionDataset} class, designed to parse COCO-formatted JSON annotations and apply image transformations defined within the \texttt{get\_transform()} function. 
+Before training, the dataset directory was prepared using the \texttt{extract\_images\_zip()} utility, followed by annotation correction using \texttt{fix\_coco\_json()} to ensure compatibility with the COCO API. Both the training and validation data loaders were configured with a batch size of 2. To handle different lengths of target dictionaries and varying numbers of bounding boxes in object detection, we created a custom \texttt{collate\_fn} for batching.
+
+\subsubsection*{Training Setup}
+The RetinaNet model was trained for up to 100 epochs using the AdamW optimizer (learning rate: 1e-4, weight decay: 0.01). A StepLR scheduler reduced the learning rate every 25 epochs, while gradient clipping with a maximum norm of 0.1 was enabled to prevent exploding gradients, which can occur when training large dense prediction heads such as RetinaNet’s classification subnetwork. The model computed and logged classification and bounding-box regression losses to TensorBoard. Validation loss was evaluated in training mode, and metrics were calculated using the COCOeval API. Checkpoints were saved every 10 epochs, the best model was tracked based on mAP@0.50:0.95, and early stopping with a 20-epoch patience was used to optimize computation.
+
+\subsubsection*{Evaluation and Metric Computation}
+Model evaluation was performed using COCO-style detection metrics through the \texttt{COCOeval} API. During the validation phase, the model was switched to evaluation mode (\texttt{model.eval()}) to disable dropout and update batch normalisation. Predictions were generated for each image, resulting in outputs that included bounding boxes, class labels, and confidence scores. These outputs were then reformatted into COCO-style detection entries. Each detection was matched to its corresponding \texttt{image\_id} from the validation JSON annotations to ensure accurate metric computation.
+
+\subsubsection*{Logging and Monitoring}
+Throughout the training, detailed logs were performed using TensorBoard’s SummaryWriter. Logged values included total loss, individual loss components, learning rate schedules, precision/recall metrics, and both mAP scores. Additionally, each epoch’s metrics and losses were attached to a structured CSV file, allowing direct comparison with YOLO-based detectors and facilitating external analysis and plotting. Progress bars (tqdm) were used to visualise training and validation progress in real time, and epoch duration was recorded to monitor runtime efficiency.
 
 \subsubsection{RF-DETR}
 
-\textcolor{red}{TODO AMY: REWRITE ROUGH POINTS}
+The RF-DETR implementation utilized the \verb|rfdetr| library to facilitate with loading and training the pre-trained model. The model size used for the implementation in this project was the RF-DETR Base model. The base model was initialized using the built-in class \verb|RFDETRBase()| provided by the \verb|rfdetr| library. The model was then fine-tuned on the Maltese traffic signs dataset to be able to detect the six different traffic sign types.
 
 \paragraph{Dataset Preparation}
-several steps had to be taken to prepare the dataset for triaing. 1) RF-DETR expects the dataset to contain hree subdirectories: train, valid, and test. Each subdirectory should contain its own \_annotations.coco.json file. the annotation files were renamed and moved to each directory to match this format 2) had to add a supercategory to the annotations in all annotations files. rf-detr expects the categories in the annotations to contain a supercategory. added supercategory to each category - "traffic\_sign" 3) had to adjust the 1-based indexing of the categories in the annotations file to 0-based indexing to resolve index error when beginning the training
+Before training, the dataset had to be organised and formatted into the structure expected by RF-DETR. RF-DETR expects the dataset to contain three subdirectories (named \verb|train|, \verb|valid|, and \verb|test|) so each directory containing the images for that split was renamed as such. Each subdirectory needs to contain its own annotations file for that split, named \verb|_annotations.coco.json|, so each file was renamed and placed in the corresponding subdirectory. The second preparatory step that had to be taken was adding \verb|supercategory| to every category in all of the annotation files. This had to be done because RF-DETR expects the \verb|categories| entries to include the key \verb|supercategory|, but these were not present in the original annotation files, and was resulting in a \verb|KeyError|. One common supercategory name was chosen (\verb|traffic_sign|) and added to each category. This ensured all traffic sign classes were grouped under a common parent category. Finally, the final step that had to be taken was to change the 1-based indexing of the category IDs in the original annotation files to 0-based IDs, as this was resulting in an index error. A preprocessing function was created to update all category IDs and corresponding annotations to prevent index errors during training.
 
-\paragraph{Model Architecture} The pretrained RF-DETR Base model was initialized using \verb|RFDETRBase()|. The model was pretrained on the COCO dataset.
+\paragraph{Training Configuration} Training was performed using the built-in \verb|train()| method from \verb|rfdetr| with the following parameters. The maximum number of epochs was 100. Early stopping was enabled with a patience of 20 epochs. A batch size of 4 was used along with a gradient accumulation of 4 steps, to maintain a total batch size of 16. This was the recommended batch size setup for training on smaller GPUs. The input image resolution was lowered slightly to 448$\times$448 for efficiency. A learning rate of $1 \times 10^{-4}$ was used. Exponential Moving Average (EMA) of weights was kept enabled, so that a model with EMA weights was also produced during training. This often improves results, and overall the EMA model was performing better during training than the base model. The final model checkpoint automatically chosen as the best model was the better one out of the EMA and non-EMA models.
 
-\paragraph{Training Configuration} Training was performed using the built-in \verb|train()| method from RF-DETR. epochs=100 with early stopping set to true at a pateince of 20. batch\_size=4 and grad\_accum\_steps=4, to total into a total batch size of 16, this was the recommended batch size setup for smaller GPUs. model was trained using colab to make use of gpu. lr=1e-4. lowered the image resolution to 448, slightly lower than the default resolution. used Exponential Moving Average of weights. overall the ema model was performing better during trianing than the base model
-
-\paragraph{Logging and Monitoring} tensorboard was used to monitor and log training metrics. mention map@50:90 issue....
-
-\paragraph{Evaluation Setup}
+\paragraph{Logging and Monitoring} TensorBoard logging was enabled to track and monitor loss and metrics over time while training. The main evaluation metrics tracked during training were mAP@IoU=0.50 and mAP@IoU=0.50:0.95. During analysis, it was observed that TensorBoard labeled the mAP@IoU=0.50:0.95 metric incorrectly as mAP@IoU=0.50:0.90. This issue was investigated by comparing the mAP@IoU=0.50:0.95 values printed in the training console output with the mAP@IoU=0.50:0.90 values recorded in TensorBoard. The numerical values matched exactly, confirming that the mAP@IoU=0.50:0.95 metric was being computed correctly and only the label in TensorBoard was incorrect. Therefore, for the RF-DETR implementation in this project, any TensorBoard metric labeled as mAP@IoU=0.50:0.90 should be interpreted as mAP@IoU=0.50:0.95. This issue affected only the metric naming in logs and did not impact training, evaluation, or model performance. Model checkpoints were saved periodically every 10 epochs, and the best performing checkpoint was automatically selected and saved as \verb|checkpoint_best_total.pth|. Additionally, a \verb|results.json| file was saved containing the final model evaluation metrics on the validation and test sets.
 
 \subsection{YOLO-based Detectors}
 
@@ -307,26 +336,79 @@ A notable observation in the training dynamics is the divergence in classificati
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1.0\textwidth]{fasterrcnnperf.png}
+    \includegraphics[width=0.8\textwidth]{fasterrcnnperf.png}
     \caption{Faster R-CNN Training Performance Metrics.}\label{fig:rcnn_map}
 \end{figure}
 
 \subsubsection{RetinaNet}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{retinanetgraphs.png}
+    \caption{Retina Net Training Performance Metrics.}\label{fig:retinanetgraphs}
+\end{figure}
 
 \subsubsection{RF-DETR}
 
-\textcolor{red}{TODO AMY: WRITE EVALUATION AND FIX FIGURe}
+
+The RF-DETR model was trained for a total of 56 epochs and performance was evaluated using standard object detection evaluation metrics, including mAP@IoU=0.50, mAP@IoU=0.50:0.95, precision, and recall. The goal of the evaluation was to measure how accurately the model could detect traffic signs in an image and localize them using bounding boxes.
+
+The final best model achieved the following results on the validation set:
+
+\begin{itemize}
+    \item mAP@IoU=0.50: 78.61\%
+    \item mAP@IoU=0.50:0.95: 64.23\%
+    \item Precision: 83.38\%
+    \item Recall: 68\%
+\end{itemize}
+
+A mAP@IoU=0.50 of 78.61\% indicates that the model performs well at correctly identifying the traffic signs. Although the model has good detection capability, the lower mAP@IoU=0.50:0.95 (64.23\%) shows that the performance decreases when it comes to precise localization of the traffic signs in the image. The high precision (83.38\%) suggests that most predicted detections correspond to real traffic signs, so the model produces few false positives. The recall of 68\% indicates that although most traffic signs are detected, some are still missed.
+
+These performance metrics were also computed for each separate class as shown in Table~\ref{table:rf-detr-metrics}.
+
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\textwidth}{|p{3.2cm}|X|X|X|X|X|X|}
+\hline
+ & Blind-Spot Mirror (Convex) & No Entry (One Way) & No Through Road (T-Sign) & Pedestrian Crossing & Roundabout Ahead & Stop \\ \hline
+mAP@IoU=0.50 & 86.10\% & 76.73\% & 81.16\% & 62.50\% & 74.44\% & 90.72\% \\ \hline
+mAP@IoU=0.50:0.95 & 72.17\% & 65.08\% & 66.58\% & 45.17\% & 59.17\% & 77.23\% \\ \hline
+Precision & 100\% & 87.5\% & 84.62\% & 44.83\% & 83.33\% & 100\% \\ \hline
+Recall & 68\% & 68\% & 68\% & 68\% & 68\% & 68\% \\ \hline
+\end{tabularx}
+\caption{Per-class Performance Metrics}
+\label{table:rf-detr-metrics}
+\end{table}
+
+Detection performance varies across traffic sign types, as shown in Table~\ref{table:rf-detr-metrics}. Stop signs achieved the highest performance, indicating that the model is confident and accurate when detecting this sign. Blind-Spot Mirror (Convex) signs also performed strongly. Pedestrian Crossing signs showed the lowest performance, which suggests that this class is more difficult for the model. The equal recall values (68\%) across classes shows that missed detections are distributed fairly evenly rather than concentrated in one single category.
+
+Training progress was monitored using loss and detection metrics over epochs, as illustrated in Figure~\ref{fig:rf-detr_results}. Training loss showed a general downward trend and so did validation loss, suggesting that the model does not significantly overfit. Both mAP@0.50 and mAP@0.50:0.95 improved steadily during training. The EMA model consistently outperformed the base model, indicating that weight smoothing improved generalization.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1.0\textwidth]{rfdetr_metrics_plot.png}
+    \includegraphics[width=0.8\textwidth]{rfdetr_metrics_plot.png}
     \caption{RF-DETR Training Metrics}
     \label{fig:rf-detr_results}
 \end{figure}
 
+Evaluation was also performed on the test set to see how accurately the model can correctly classify each sign. As illustrated in the confusion matrix in Figure~\ref{fig:rf-detr_cm}, it can be seen that the Blind-Spot Mirror, No Entry, and Stop sign types were the most correctly detected. Some confusion occurs between signs such as Pedestrian Crossing with No Through Road and Roundabout Ahead. No Entry, Blind-Spot Mirror, and Pedestrian Crossing signs were also occasionally missed by the detector.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{rfdetr_confusion_matrix.png}
+    \caption{RF-DETR Confusion Matrix}
+    \label{fig:rf-detr_cm}
+\end{figure}
+
+Additionally, visual inspection of a few of the predictions on the sample test images show that the model generally successfully detects multiple traffic signs in a single image and bounding boxes are generally well-aligned with the true sign boundaries. However, some failure cases were also observed, where signs were sometimes missed or misclassified, especially signs that appear smaller or further away in the distance, or were partially covered.
+
 \subsection{YOLO-based Detectors}
-\subsubsection{YOLOv8 - Joachim Grech}
+
+\subsubsection{YOLOv8}
+
+Two YOLOv8 models were trained independently by different team members. Although both models were trained on the same traffic sign dataset, differences in training configuration and hyperparameters led to variations in performance. This section evaluates each model separately.
+
+\subsubsection*{YOLOv8 - Joachim Grech}
 The YOLOv8 model, specifically the nano variant (\texttt{yolov8n}), was trained for 100 epochs using the Ultralytics framework and the Adam optimizer. This version of YOLO utilizes a C2f module and a decoupled head, improving the balance between speed and accuracy for object detection.
 
 The model reached a peak performance with an overall mAP@.50 of 65.38\% and an mAP@.50:.95 of 51.86\%. The per-class mAP@.50 metrics provide further insight into its effectiveness:
@@ -353,9 +435,66 @@ Analysis of the training curves in Figure~\ref{fig:yolov8_perf} shows that the m
     \caption{YOLOv8 Confusion Matrix.}\label{fig:yolov8_cm}
 \end{figure}
 
+\subsubsection*{YOLOv8 - Amy Spiteri}
+
+This model was trained for a total of 100 epochs and the best model checkpoint achieved the following performance metrics on the validation set:
+
+\begin{itemize}
+    \item mAP@0.50: 67.98\%
+    \item mAP@0.75: 61.03\%
+    \item mAP@0.50:0.95: 54.88\%
+\end{itemize}
+
+A mAP@0.50 of 67.98\% shows that the model is able to correctly identify traffic signs under moderate IoU constraints, but the drop to 54.88\% mAP@0.50:0.95 indicates that bounding box localization is not so accurate.
+
+Precision and recall values for each separate class are also shown in Table~\ref{table:yolov8-metrics}.
+
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\textwidth}{|p{3.2cm}|X|X|X|X|X|X|}
+\hline
+ & Blind-Spot Mirror (Convex) & No Entry (One Way) & No Through Road (T-Sign) & Pedestrian Crossing & Roundabout Ahead & Stop \\ \hline
+Precision & 94.55\% & 78.93\% & 68.57\% & 72.54\% & 72.35\% & 85.61\% \\ \hline
+Recall & 78.38\% & 54.84\% & 50\% & 47.37\% & 56.16\% & 80\% \\ \hline
+\end{tabularx}
+\caption{YOLOv8 Per-class Performance Metrics}
+\label{table:yolov8-metrics}
+\end{table}
+
+Blind-Spot Mirror and Stop signs achieved the highest precision, so predictions for these classes were usually correct. Pedestrian Crossing and No Through Road signs show lower recall, indicating that these signs were more frequently missed. The difference between precision and recall in several classes suggests the model is quite cautious and prefers fewer but more confident detections.
+
+The mAP@0.50:0.95 curve over 100 epochs (as illustrated in Figure~\ref{fig:yolo8-amy-map}) shows rapid improvement during early training epochs and then stabilization after around epoch 40.
+
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{yolov8-amy-map.png}
+    \caption{YOLOv8 mAP@0.50:0.95 per Epoch (yolov8-amy)}
+    \label{fig:yolo8-amy-map}
+\end{figure}
+
 
 
 \subsubsection{YOLOv11}
+The YOLOv11 model underwent training for 100 epochs utilizing the Ultralytics framework. As a high-performance one-stage detector, YOLOv11 adopts a three-stage backbone–neck–head architecture with improved feature fusion, designed to balance representational capacity with real-time inference requirements.
+
+The model achieved the following peak performance metrics on the validation set:
+\begin{itemize}
+    \item mAP@.50: 65.44\%
+    \item mAP@.50:.95: 55.12\%
+    \item Precision (mean over classes): 74.62\%
+    \item Recall (mean over classes): 58.71\%
+\end{itemize}
+
+As illustrated in Figure \ref{fig:yolo11}, the training results demonstrate an efficient and stable learning progression. The model achieved over 50\% mAP within the initial epochs and continued to improve steadily throughout training. The validation classification loss ($L_{val_cls}$) stabilised at roughly 0.686, indicating stable generalisation. The YOLOv11 architecture, enhanced by DFL and advanced augmentation, effectively reduces categorical overfitting in this dataset.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{yolo11results.png}
+    \caption{YOLOv11 Training Metrics.}\label{fig:yolo11}
+\end{figure}
+
 \subsubsection{YOLOv12}
 The YOLOv12 model was trained for 100 epochs using the Ultralytics framework. As a state-of-the-art one-stage detector, YOLOv12 utilizes an optimized backbone and neck architecture designed to maximize feature extraction efficiency while maintaining high inference speeds.
 
@@ -367,20 +506,92 @@ The model achieved the following peak performance metrics on the validation set:
     \item Recall: 79.78\%
 \end{itemize}
 
-Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly efficient learning curve, with the model surpassing 50\% mAP within the first few epochs. The model maintained a consistent, stable trajectory, for the validation classification loss ($L_{val\_cls}$) eventually settling at 0.686. This suggests that the YOLOv12 architecture, likely aided by Distribution Focal Loss (DFL) and advanced data augmentation, is resilient to categorical overfitting on this specific dataset.
+Analysis of the training results in Figure~\ref{fig:yolo12_perf} shows a highly efficient learning curve, with the model surpassing 50\% mAP within the first few epochs. The model maintained a consistent, stable trajectory, for the validation classification loss ($L_{val\_cls}$) eventually settling at 0.686. This suggests that the YOLOv12 architecture, likely aided by Distribution Focal Loss (DFL) and advanced data augmentation, is resilient to categorical overfitting on this specific dataset.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=1.0\textwidth]{yolo12results.png}
-    \caption{YOLOv12 Training Metrics.}\label{fig:yolo_perf}
+    \includegraphics[width=0.8\textwidth]{yolo12results.png}
+    \caption{YOLOv12 Training Metrics.}\label{fig:yolo12_perf}
 \end{figure}
 
+Upon inspection of the precision-recall curve (Figure~\ref{fig:yolo12_pr}), it became evident that the model achieved similar performance across all classes except `Pedestrian Crossing'. This is further corroborated by the confusion matrix (Figure~\ref{fig:yolo12_cm}), which shows a higher incidence of misclassifications for this class compared to others. The `Pedestrian Crossing' signs were often confused with `Roundabout Ahead' and `No Through Road (T-Sign)' signs, but mostly with the background class. This suggests that the model struggled to distinguish `Pedestrian Crossing' signs from other similar sign types, potentially due to their visual similarities or insufficient representation in the training data, which is a surprising outcome given that `Pedestrian Crossing' signs were the second most common sign type in the dataset.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{yolo12pr.png}
+        \caption{Precision-Recall Curve}\label{fig:yolo12_pr}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{yolo12cm.png}
+        \caption{Confusion Matrix}\label{fig:yolo12_cm}
+    \end{subfigure}
+    \caption{Precision-Recall Curve and Confusion Matrix for YOLOv12}\label{fig:yolo12_pr_cm}
+\end{figure}
+
+
+
 \subsection{Comparison between the different detectors}
+\textbf{\color{red} add explanation of what map is \& why we chose it, explain disstinction between 50 and 50-95} % todo: this
+During training, each team member was instructed to log their model's performance. Specifically, the two metrics we decided to focus on were mAP@50 and mAP@50:95, as these are the standard metrics used in object detection tasks.
+
+In order to compare the performance of all the trained detectors, a robust script was required since, although all team members were using the same dataset, and aiming to capture the same metrics, slight variations in the implementation methods meant that the outputs required some `massaging' to be comparable. A brief outline of the steps taken to achieve this is provided below, while the full implementation can be found in the 2c notebook.
+
+\begin{enumerate}
+    \item Each model's results were saved and logged after every epoch during training. These logs were written to an events file for real-time monitoring of training progress using TensorBoard.
+    \item After each member completed training their specific models, the events files were collected and organized into a shared folder.
+    \item In the 2c notebook, the events files were parsed and the specific results of each model (mAP@50, mAP@50:95) were plotted (shown in Figure~\ref{fig:map_broken}).
+    \item After noticing many duplicate/incomplete results in the initial plots, the following heuristics were applied to clean the data:
+          \begin{itemize}
+              \item Remove duplicate results.
+              \item Merge results from the same runs that were split across multiple events files.
+              \item Disregard plots with missing metrics.
+              \item Only keep the single best / longest run for each model.
+          \end{itemize}
+    \item The cleaned results were then re-plotted to produce the final comparison graphs (shown in Figure~\ref{fig:map_all} in Section~\ref{sec:all-together}).
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{map_broken.png}
+    \caption{Comparison of mAP across different detectors}\label{fig:map_broken}
+\end{figure}
+
+\subsubsection{All Detectors together}\label{sec:all-together}
+The performance of all implemented models was aggregated to compare their learning trajectories and final accuracy, as illustrated in Figure~\ref{fig:map_all}. The evaluation focused on two primary metrics: mAP@50 and mAP@50-95.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{map_all.png}
+    \caption{Comparison of mAP across after fixing}\label{fig:map_all}
+\end{figure}
+
+As seen in the results, \textbf{YOLOv12} (red line) emerged as the superior model, achieving the highest peak performance with an mAP@50 exceeding $0.80$ and an mAP@50-95 reaching approximately $0.70$. It demonstrated rapid convergence, stabilizing after roughly 40 steps. \textbf{Faster R-CNN} (brown line) and \textbf{rf-detr} (pink line) followed closely, maintaining competitive mAP@50 scores around $0.75-0.78$. These results suggest that the two-stage and transformer-based architectures are highly effective for this dataset's specific traffic sign features.
+
+
+
+The detectors trained on specific sign attributes (prefixed with \texttt{SIGN\_ATTR}) showed varying degrees of success:
+
+\begin{itemize}
+    \item \textbf{Sign-shape} and \textbf{Viewing-angle} performed robustly, aligning with the mid-tier YOLO models with mAP@50 scores between $0.65$ and $0.75$.
+    \item \textbf{Mounting-type} (orange line) exhibited a much slower learning curve, likely due to the extreme class imbalance (87\% pole-mounted) noted in the data preparation section. It required the full 100 steps to reach an mAP@50 of $0.65$.
+    \item \textbf{Sign-condition} (light green line) was the worst performer among the attribute detectors, plateauing early at an mAP@50 of roughly $0.30$. This is directly attributable to the severe underrepresentation of damaged signs ($3.8\%$) in the dataset.
+\end{itemize}
+
+While \textbf{YOLOv8-amy} and \textbf{YOLOv11} showed stable, consistent growth, \textbf{EfficientDet} (purple line) failed to scale effectively, terminating early with significantly lower accuracy. The volatility observed in \textbf{YOLOv8-joachim} suggests that hardware-constrained optimizations (reduced resolution and batch size) introduced noise into the training process, though the model eventually reached a respectable mAP@50 of $0.75$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{map_cat.png}
+    \caption{Comparison of Inference Times across different detectors}\label{fig:map_cat}
+\end{figure}
+
+
 \subsubsection{COCO-based vs YOLO-based Detectors}
 
 \subsubsection{Sign Attribute Comparison}
-
-\subsubsection{All Detectors together}
 
 \newpage
 \pagenumbering{roman}
@@ -403,8 +614,24 @@ Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly ef
     \bibitem{resnet}
     K. He, X. Zhang, S. Ren, and J. Sun, ``Deep residual learning for image recognition,'' in \textit{Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, Las Vegas, NV, USA, 2016, pp. 770--778.
 
+
+    \bibitem{rf-detr}
+    I. Robinson, P. Robicheaux, M. Popov, D. Ramanan, and N. Peri, ``RF-DETR: Neural Architecture Search for Real-Time Detection Transformers,'' arXiv preprint arXiv:2511.09554, 2025. [Online]. Available: https://arxiv.org/abs/2511.09554
+
+    \bibitem{detr}
+    N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, and S. Zagoruyko, ``End-to-End Object Detection with Transformers,'' in \textit{Computer Vision -- ECCV 2020}, A. Vedaldi, H. Bischof, T. Brox, and JM. Frahm, Eds. Cham, Switzerland: Springer, 2020, pp. 213--229.
+
+    \bibitem{dinov2}
+    M. Oquab et al., ``DINOv2: Learning Robust Visual Features without Supervision,'' arXiv preprint arXiv:2304.07193, 2024. [Online]. Available: https://arxiv.org/abs/2304.07193
+
     \bibitem{yolo}
     J. Redmon, S. Divvala, R. Girshick, and A. Farhadi, ``You Only Look Once: Unified, Real-Time Object Detection,'' in \textit{Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, Las Vegas, NV, USA, 2016, pp. 779--788.
+
+    \bibitem{retinanet}
+    T. Y. Lin, P. Goyal, R. Girshick, K. He, and P. Doll\'{a}r, ``Focal Loss for Dense Object Detection,'' in \textit{Proceedings of the IEEE International Conference on Computer Vision (ICCV)}, Venice, Italy, 2017, pp. 2980--2988.
+
+    \bibitem{viso_retinanet}
+    Viso.ai, ``RetinaNet: The Definitive Guide (2025),'' \textit{Viso.ai Blog}, 2022. [Online]. Available: \url{https://viso.ai/deep-learning/retinanet/}. [Accessed: 30-Jan-2025].
 
     \bibitem{efficientdet}
     M. Tan, R. Pang, and Q. V. Le, ``EfficientDet: Scalable and Efficient Object Detection,'' in \textit{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, Seattle, WA, USA, 2020, pp. 10781--10790.
@@ -415,7 +642,9 @@ Analysis of the training results in Figure~\ref{fig:yolo_perf} shows a highly ef
 
     \bibitem{antigravity}
     Google DeepMind, ``Antigravity: Advanced Agentic Coding Assistant,'' 2026. [Online].
+
 \end{thebibliography}
+
 
 
 \end{document}
