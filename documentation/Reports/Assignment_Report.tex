@@ -403,7 +403,41 @@ Evaluation was also performed on the test set to see how accurately the model ca
 Additionally, visual inspection of a few of the predictions on the sample test images show that the model generally successfully detects multiple traffic signs in a single image and bounding boxes are generally well-aligned with the true sign boundaries. However, some failure cases were also observed, where signs were sometimes missed or misclassified, especially signs that appear smaller or further away in the distance, or were partially covered.
 
 \subsection{YOLO-based Detectors}
+
 \subsubsection{YOLOv8}
+
+Two YOLOv8 models were trained independently by different team members. Although both models were trained on the same traffic sign dataset, differences in training configuration and hyperparameters led to variations in performance. This section evaluates each model separately and then compares their results.
+
+\subsubsection*{yolov8-amy}
+
+This model was trained for a total of 100 epochs and the best model checkpoint achieved the following performance metrics on the validation set:
+
+\begin{itemize}
+    \item mAP@0.50: 67.98\%
+    \item mAP@0.75: 61.03\%
+    \item mAP@0.50:0.95: 54.88\%
+\end{itemize}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{yolov8-amy-map.png}
+    \caption{YOLOv8 mAP@0.50:0.95 per Epoch (yolov8-amy)}
+    \label{fig:yolo8-amy-map}
+\end{figure}
+
+\subsubsection*{yolov8-joachim}
+
+This model also underwent training for a total of 100 epochs. The model achieved the following results on the validation set:
+
+\begin{itemize}
+    \item mAP@0.50: 68.57\%
+    \item mAP@0.50:0.95: 58.12\%
+    \item Precision: 75.86\%
+    \item Recall: 55.42\%
+\end{itemize}
+
+
 \subsubsection{YOLOv11}
 The YOLOv11 model underwent training for 100 epochs utilizing the Ultralytics framework. As a high-performance one-stage detector, YOLOv11 adopts a three-stage backbone–neck–head architecture with improved feature fusion, designed to balance representational capacity with real-time inference requirements.
 
