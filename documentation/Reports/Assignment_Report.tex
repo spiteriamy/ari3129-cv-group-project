@@ -614,6 +614,16 @@ Overall, the best performing model was YOLOv12, while the best COCO-based model 
 
 \subsubsection{Sign Attribute Comparison}
 
+In addition to object detection, separate models were trained to classify traffic sign attributes, namely sign shape, viewing angle, sign condition, and mounting type. The performance comparison across these attribute models reveals clear differences in difficulty and model capability.
+
+Sign shape was the best-performing attribute task. The model achieved a mAP@0.50 of 75.62\% and a mAP@0.50:0.95 of 63.64\%. The relatively high scores indicate that geometric properties are highly learnable features. Shapes such as triangles, circles, rectangles, and octagons remain visible even under scale or lighting differences. The moderate drop from mAP@0.50 to mAP@0.50:0.95 suggests that while the model correctly classifies shapes, bounding box precision is still slightly lower. However, compared to other attributes, shape remained the easiest for the model to learn.
+
+Viewing angle detection also performed well, although slightly below sign shape, with a mAP@0.50 of 70.34\% and a mAP@0.50:0.95 of 58.58\%. The model's precision and recall values were also quite balanced, with precision at 74.97\% and recall at 67.79\%. Overall, the results show that viewing angle is a moderately difficult but still learnable attribute. This could be attributed to the fact that the class distribution for viewing angle was quite balanced, therefore there were enough examples from each class for the model to learn from.
+
+The mounting type model achieved mid-range performance, reaching a mAP@0.50 of 68.51\% and mAP@0.50:0.95 of 57.49\%. Lower performance might be attributed to the fact that there is an extreme class imbalance, with very few wall-mounted signs appearing in the dataset. Additionally, this task also relies on features that may appear outside of the bounding box itself, such as poles and walls, which might also be a factor in lower performance. This model performed quite similarly to viewing angle, with only a small decrease in mAP.
+
+Sign condition was the most challenging attribute, performing the worst out of all models. This model achieved a mAP@0.50 of 29.67\% and a mAP@0.50:0.95 of 22.75\%. This was due to the severe class imbalance in the dataset, where Heavily Damaged signs were severely underrepresented, leading the model to not be able to learn this attribute well. This task requires more balanced training samples in order to achieve better results.
+
 \newpage
 \pagenumbering{roman}
 \section{References and List of Resources Used}
