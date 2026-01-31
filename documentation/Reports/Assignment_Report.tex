@@ -234,8 +234,6 @@ Before training, the dataset had to be organised and formatted into the structur
 
 \paragraph{Logging and Monitoring} TensorBoard logging was enabled to track and monitor loss and metrics over time while training. The main evaluation metrics tracked during training were mAP@IoU=0.50 and mAP@IoU=0.50:0.95. During analysis, it was observed that TensorBoard labeled the mAP@IoU=0.50:0.95 metric incorrectly as mAP@IoU=0.50:0.90. This issue was investigated by comparing the mAP@IoU=0.50:0.95 values printed in the training console output with the mAP@IoU=0.50:0.90 values recorded in TensorBoard. The numerical values matched exactly, confirming that the mAP@IoU=0.50:0.95 metric was being computed correctly and only the label in TensorBoard was incorrect. Therefore, for the RF-DETR implementation in this project, any TensorBoard metric labeled as mAP@IoU=0.50:0.90 should be interpreted as mAP@IoU=0.50:0.95. This issue affected only the metric naming in logs and did not impact training, evaluation, or model performance. Model checkpoints were saved periodically every 10 epochs, and the best performing checkpoint was automatically selected and saved as \verb|checkpoint_best_total.pth|. Additionally, a \verb|results.json| file was saved containing the final model evaluation metrics on the validation and test sets.
 
-\paragraph{Evaluation Setup}
-
 \subsection{YOLO-based Detectors}
 
 The implementation of different YOLO versions (YOLOv8, YOLOv11, and YOLOv12) followed a consistent methodology across all group members, with variations primarily in model size selection and hardware-specific optimizations. This section describes the common approach and highlights significant deviations.
@@ -344,7 +342,39 @@ A notable observation in the training dynamics is the divergence in classificati
 
 \subsubsection{RF-DETR}
 
-\textcolor{red}{TODO AMY: WRITE EVALUATION AND FIX FIGURe}
+
+The RF-DETR model was trained for a total of 56 epochs and performance was evaluated using standard object detection evaluation metrics, including mAP@IoU=0.50, mAP@IoU=0.50:0.95, precision, and recall. The goal of the evaluation was to measure how accurately the model could detect traffic signs in an image and localize them using bounding boxes.
+
+The final best model achieved the following results on the validation set:
+
+\begin{itemize}
+    \item mAP@IoU=0.50: 78.61\%
+    \item mAP@IoU=0.50:0.95: 64.23\%
+    \item Precision: 83.38\%
+    \item Recall: 68\%
+\end{itemize}
+
+A mAP@IoU=0.50 of 78.61\% indicates that the model performs well at correctly identifying the traffic signs. Although the model has good detection capability, the lower mAP@IoU=0.50:0.95 (64.23\%) shows that the performance decreases when it comes to precise localization of the traffic signs in the image. The high precision (83.38\%) suggests that most predicted detections correspond to real traffic signs, so the model produces few false positives. The recall of 68\% indicates that although most traffic signs are detected, some are still missed.
+
+These performance metrics were also computed for each separate class as shown in Table~\ref{table:rf-detr-metrics}.
+
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\textwidth}{|p{3.2cm}|X|X|X|X|X|X|}
+\hline
+ & Blind-Spot Mirror (Convex) & No Entry (One Way) & No Through Road (T-Sign) & Pedestrian Crossing & Roundabout Ahead & Stop \\ \hline
+mAP@IoU=0.50 & 86.10\% & 76.73\% & 81.16\% & 62.50\% & 74.44\% & 90.72\% \\ \hline
+mAP@IoU=0.50:0.95 & 72.17\% & 65.08\% & 66.58\% & 45.17\% & 59.17\% & 77.23\% \\ \hline
+Precision & 100\% & 87.5\% & 84.62\% & 44.83\% & 83.33\% & 100\% \\ \hline
+Recall & 68\% & 68\% & 68\% & 68\% & 68\% & 68\% \\ \hline
+\end{tabularx}
+\caption{Per-class Performance Metrics}
+\label{table:rf-detr-metrics}
+\end{table}
+
+Detection performance varies across traffic sign types, as shown in Table~\ref{table:rf-detr-metrics}. Stop signs achieved the highest performance, indicating that the model is confident and accurate when detecting this sign. Blind-Spot Mirror (Convex) signs also performed strongly. Pedestrian Crossing signs showed the lowest performance, which suggests that this class is more difficult for the model. The equal recall values (68\%) across classes shows that missed detections are distributed fairly evenly rather than concentrated in one single category.
+
+% \ref{fig:rf-detr_results}
 
 \begin{figure}[h!]
     \centering
@@ -352,6 +382,16 @@ A notable observation in the training dynamics is the divergence in classificati
     \caption{RF-DETR Training Metrics}
     \label{fig:rf-detr_results}
 \end{figure}
+
+Evaluation was also performed on the test set to see how accurately the model can correctly classify each sign. As illustrated in the confusion matrix in Figure~\ref{fig:rf-detr_cm}, it can be seen that the Blind-Spot Mirror, No Entry, and Stop sign types were the 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{rfdetr_confusion_matrix.png}
+    \caption{RF-DETR Confusion Matrix}
+    \label{fig:rf-detr_cm}
+\end{figure}
+
 
 \subsection{YOLO-based Detectors}
 \subsubsection{YOLOv8}
