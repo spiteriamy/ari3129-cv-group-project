@@ -594,7 +594,7 @@ The detectors trained on specific sign attributes (prefixed with \texttt{SIGN\_A
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{map_cat.png}
-    \caption{Comparison of Inference Times across different detectors}\label{fig:map_cat}
+    \caption{Comparison of mAP across the different models, grouped by category}\label{fig:map_cat}
 \end{figure}
 
 
@@ -602,15 +602,15 @@ The detectors trained on specific sign attributes (prefixed with \texttt{SIGN\_A
 
 A broader architectural comparison reveals clear differences between COCO-style detectors and YOLO-style detectors.
 
-The COCO-Based Detectors (Faster R-CNN, RetinaNet, RF-DETR, EfficientDet) generally demonstrate strong localization accuracy, especially for RF-DETR and Faster R-CNN which achieved both the highest mAP@0.50 and mAP@0.50:0.95 out of all of the COCO-Based Detectors. However, they also achieved a slightly lower recall when compared to the best YOLO model. Additionally, the larger performance gap between mAP@0.50 and mAP@0.50:0.95 in RetinaNet and Faster R-CNN suggests less precise bounding box accuracy than YOLOv12. Among the COCO-based models, RF-DETR is clearly the strongest, outperforming Faster R-CNN and RetinaNet in both classification and localization with a mAP@0.50 of 78.61\% and mAP@0.50:0.95 of 64.23\%.
+The COCO-Based Detectors (Figure~\ref{fig:map_cat}, left) generally demonstrate strong localization accuracy, especially for RF-DETR and Faster R-CNN which achieved both the highest mAP@0.50 and mAP@0.50:0.95 out of all of the COCO-Based Detectors. However, they also achieved a slightly lower recall when compared to the best YOLO model. Additionally, the larger performance gap between mAP@0.50 and mAP@0.50:0.95 in RetinaNet and Faster R-CNN suggests less precise bounding box accuracy than YOLOv12. Among the COCO-based models, RF-DETR is clearly the strongest, outperforming Faster R-CNN and RetinaNet in both classification and localization with a mAP@0.50 of 78.61\% and mAP@0.50:0.95 of 64.23\%.
 
-The YOLO-Based Detectors (YOLOv8, YOLOv11, YOLOv12), specifically YOLOv12, demonstrates a strong balance between precision and recall. YOLOv12 achieved the best overall results out of all detectors, and the small gap between mAP@0.50 and mAP@0.50:0.95 indicates high quality bounding box accuracy. However, earlier YOLO variants such as YOLOv8 and YOLOv11 show reduced recall. They also have a tendency to miss harder classes such as Pedestrian Crossing. 
+The YOLO-Based Detectors (Figure~\ref{fig:map_cat}, middle), specifically YOLOv12, demonstrates a strong balance between precision and recall. YOLOv12 achieved the best overall results out of all detectors, and the small gap between mAP@0.50 and mAP@0.50:0.95 indicates high quality bounding box accuracy. However, earlier YOLO variants such as YOLOv8 and YOLOv11 show reduced recall. They also have a tendency to miss harder classes such as Pedestrian Crossing. 
 
 Overall, the best performing model was YOLOv12, while the best COCO-based model was RF-DETR. The most challenging class for all models was Pedestrian Crossing. These results show that while COCO-style detectors remain strong, in particular RF-DETR, the latest YOLO models can outperform them in both detection accuracy and localization precision for traffic sign recognition.
 
 \subsubsection{Sign Attribute Comparison}
 
-In addition to object detection, separate models were trained to classify traffic sign attributes, namely sign shape, viewing angle, sign condition, and mounting type. The performance comparison across these attribute models reveals clear differences in difficulty and model capability.
+In addition to object detection, separate models were trained to classify traffic sign attributes (Figure~\ref{fig:map_cat}, right), namely sign shape, viewing angle, sign condition, and mounting type. The performance comparison across these attribute models reveals clear differences in difficulty and model capability.
 
 Sign shape was the best-performing attribute task. The model achieved a mAP@0.50 of 75.62\% and a mAP@0.50:0.95 of 63.64\%. The relatively high scores indicate that geometric properties are highly learnable features. Shapes such as triangles, circles, rectangles, and octagons remain visible even under scale or lighting differences. The moderate drop from mAP@0.50 to mAP@0.50:0.95 suggests that while the model correctly classifies shapes, bounding box precision is still slightly lower. However, compared to other attributes, shape remained the easiest for the model to learn.
 
@@ -619,6 +619,8 @@ Viewing angle detection also performed well, although slightly below sign shape,
 The mounting type model achieved mid-range performance, reaching a mAP@0.50 of 68.51\% and mAP@0.50:0.95 of 57.49\%. Lower performance might be attributed to the fact that there is an extreme class imbalance, with very few wall-mounted signs appearing in the dataset. Additionally, this task also relies on features that may appear outside of the bounding box itself, such as poles and walls, which might also be a factor in lower performance. This model performed quite similarly to viewing angle, with only a small decrease in mAP.
 
 Sign condition was the most challenging attribute, performing the worst out of all models. This model achieved a mAP@0.50 of 29.67\% and a mAP@0.50:0.95 of 22.75\%. This was due to the severe class imbalance in the dataset, where Heavily Damaged signs were severely underrepresented, leading the model to not be able to learn this attribute well. This task requires more balanced training samples in order to achieve better results.
+
+Overall, the performance of the sign attribute models highlights the importance of balanced datasets and the inherent difficulty of certain attributes. Geometric features like shape are easier to learn, while attributes relying on contextual cues or suffering from class imbalance prove more challenging. This is illustrated by how close certain attribute models performed to state-of-the-art object detectors, namely sign shape and mounting type, while others lagged significantly behind like sign condition.
 
 \newpage
 \pagenumbering{roman}
