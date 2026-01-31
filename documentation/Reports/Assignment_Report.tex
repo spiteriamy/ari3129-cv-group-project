@@ -341,6 +341,17 @@ A notable observation in the training dynamics is the divergence in classificati
 \end{figure}
 
 \subsubsection{RetinaNet}
+The model trained was trained for 70 epochs, since it had an early stopping patience of 20 epochs and a learning rate of 0.0001.  The best-performing RetinaNet model was obtained at epoch 50, achieving the following validation results:
+
+\begin{itemize}
+    \item mAP@IoU=0.50: 66.04\%
+    \item mAP@IoU=0.50:0.95: 54.09\%
+    \item Precision: 64.81\%
+\end{itemize}
+
+The high mAP@0.50 indicates that the model is good at detecting traffic signs. However, the lower mAP@0.50:0.95 shows that it struggles with accurately locating signs when considering stricter criteria. The recall value reveals that although the model identifies most signs, it has trouble detecting some, particularly smaller or more distant ones.
+
+As shown in Figure~\ref{fig:retinanetgraphs}, the RetinaNet model displayed stable learning in the early training stages, with a consistent decrease in training loss. Validation loss initially dropped but started to rise after about 10–15 epochs, indicating overfitting. Despite this, detection metrics improved, with both mAP@0.50 and mAP@0.50:0.95 steadily increasing for the first 30–40 epochs before plateauing. The highest recorded values were around epoch 50, with mAP@0.50 stabilising at 0.64–0.66 and mAP@0.50:0.95 at 0.52–0.54. This shows that even with overfitting, the model refined its detection performance, especially in bounding-box quality across different IoU thresholds.
 
 \begin{figure}[h]
     \centering
