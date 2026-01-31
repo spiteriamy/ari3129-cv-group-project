@@ -458,7 +458,7 @@ This model was trained for a total of 100 epochs and the best model checkpoint a
 
 A mAP@0.50 of 67.98\% shows that the model is able to correctly identify traffic signs under moderate IoU constraints, but the drop to 54.88\% mAP@0.50:0.95 indicates that bounding box localization is not so accurate.
 
-Precision and recall values for each separate class are also shown in Table~\ref{table:yolov8-metrics}.
+Precision and recall values for each separate class are also shown in Table~\ref{table:yolov8-metrics}. Blind-Spot Mirror and Stop signs achieved the highest precision, so predictions for these classes were usually correct. Pedestrian Crossing and No Through Road signs show lower recall, indicating that these signs were more frequently missed. The difference between precision and recall in several classes suggests the model is quite cautious and prefers fewer but more confident detections.
 
 \begin{table}[h!]
 \centering
@@ -472,19 +472,14 @@ Recall & 78.38\% & 54.84\% & 50\% & 47.37\% & 56.16\% & 80\% \\ \hline
 \label{table:yolov8-metrics}
 \end{table}
 
-Blind-Spot Mirror and Stop signs achieved the highest precision, so predictions for these classes were usually correct. Pedestrian Crossing and No Through Road signs show lower recall, indicating that these signs were more frequently missed. The difference between precision and recall in several classes suggests the model is quite cautious and prefers fewer but more confident detections.
-
 The mAP@0.50:0.95 curve over 100 epochs (as illustrated in Figure~\ref{fig:yolo8-amy-map}) shows rapid improvement during early training epochs and then stabilization after around epoch 40.
-
-
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.8\textwidth]{yolov8-amy-map.png}
-    \caption{YOLOv8 mAP@0.50:0.95 per Epoch (yolov8-amy)}
+    \caption{YOLOv8 mAP@0.50:0.95 per Epoch}
     \label{fig:yolo8-amy-map}
 \end{figure}
-
 
 
 \subsubsection{YOLOv11}
