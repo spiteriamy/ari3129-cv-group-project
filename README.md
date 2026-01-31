@@ -38,3 +38,5 @@ Dataset/
 
 [**Annotation Process**](/Annotation%20Process/): This directory contains all of the dataset files that were uploaded during the annotation stage, before merging and creating the final dataset. It also contains scripts used to help blur the images.
 
+[**TensorBoard**](/TensorBoard/): This directory contains the TensorBoard log files for all models, to be used for task 2c (model comparisons).
+
