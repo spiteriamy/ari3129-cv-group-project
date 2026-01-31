@@ -12,6 +12,8 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{array}
 
 \lstdefinestyle{py}{
     basicstyle=\ttfamily\small,                 % Use a monospaced font
@@ -34,6 +36,12 @@
 \sloppy
 
 \renewcommand{\refname}{\vspace{-1.5em}}
+
+% Centered fixed-width column
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+% Centered auto-stretch column
+\renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
+\renewcommand{\arraystretch}{1.4}
 
 \begin{document}
 
